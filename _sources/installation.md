@@ -10,7 +10,7 @@
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/vm-vh/CompoundProfiling.git
+git clone https://github.com/lukagerlach/CompoundProfiling.git
 cd CompoundProfiling
 ```
 

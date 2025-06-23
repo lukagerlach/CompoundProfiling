@@ -29,16 +29,22 @@ exclude_patterns = []
 
 # -- Options for HTML output -------------------------------------------------
 
-html_theme = "pydata_sphinx_theme"
+html_theme = "sphinx_book_theme"
 # html_static_path = ["_static"]  # Commented out - no custom static files needed
 
-# PyData theme options
+# Sphinx Book Theme options
 html_theme_options = {
-    "logo": {
-        "text": "Compound Profiling",
-    },
-    "show_toc_level": 2,
+    "repository_url": "https://github.com/lukagerlach/CompoundProfiling",
+    "use_repository_button": True,
+    "use_issues_button": True,
+    "use_edit_page_button": True,
+    "path_to_docs": "docs/source",
+    "repository_branch": "main",
+    "home_page_in_toc": True,
+    "show_navbar_depth": 2,
 }
+
+html_title = "Compound Profiling"
 
 # -- Extension configuration -------------------------------------------------
 

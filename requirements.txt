@@ -15,5 +15,5 @@ mypy>=1.0.0
 
 # Documentation
 sphinx>=6.0.0
-pydata-sphinx-theme>=0.15.0
+sphinx-book-theme>=1.0.0
 myst-parser>=1.0.0

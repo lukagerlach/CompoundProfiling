@@ -3,15 +3,16 @@ import pickle
 from typing import Dict, Optional, Tuple
 import torch
 from torch.utils.data import DataLoader
+import torchvision.transforms as transforms
 import numpy as np
 
-from models.resnet_50_base import load_pretrained_model, create_feature_extractor, MODEL_NAMES
+from models.resnet_50_base import load_pretrained_model, create_feature_extractor, ModelName
 from pybbbc import BBBC021, constants
 
 import os
 
 
-def extract_moa_features(model_name: MODEL_NAMES, device, batch_size = 16, data_root: str = "/scratch/cv-course2025/group8", compounds: list[str] = None) -> None:
+def extract_moa_features(model_name: ModelName, device, batch_size = 16, data_root: str = "/scratch/cv-course2025/group8", compounds: list[str] = None) -> None:
     """
     Extract features for the BBBC021 dataset using a pretrained ResNet50 model.
     
@@ -28,6 +29,11 @@ def extract_moa_features(model_name: MODEL_NAMES, device, batch_size = 16, data_
     # Create feature extractor
     feature_extractor = create_feature_extractor(pretrained_model)
     
+    transform = transforms.Compose([
+        transforms.Resize((224, 224)),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])  # ImageNet normalization
+    ])
+    
     if not compounds:
         compounds = constants.COMPOUNDS
     else:
@@ -37,7 +43,7 @@ def extract_moa_features(model_name: MODEL_NAMES, device, batch_size = 16, data_
                                  f"Valid compounds are: {constants.COMPOUNDS}")
     
     # Create output directory with model name
-    output_dir = os.path.join(data_root, "bbbc021_features", model_name.value)
+    output_dir = os.path.join(data_root, "bbbc021_features", model_name)
     os.makedirs(output_dir, exist_ok=True)
     
     # Set device
@@ -66,8 +72,11 @@ def extract_moa_features(model_name: MODEL_NAMES, device, batch_size = 16, data_
                 image_groups[key] = []
             # Convert numpy array to tensor if needed
             if isinstance(image, np.ndarray):
-                image = torch.from_numpy(image).float()
+                image = torch.from_numpy(image).float()        
+            # Apply transforms (resize + normalize) - THIS IS MISSING!
+            image = transform(image)
             image_groups[key].append(image)
+            
         
         # Process each group for this compound immediately
         for key, images in image_groups.items():
@@ -117,11 +126,11 @@ def extract_moa_features(model_name: MODEL_NAMES, device, batch_size = 16, data_
 
 # main function to run the feature extraction
 if __name__ == "__main__":
-    os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+    os.environ['CUDA_VISIBLE_DEVICES'] = '3'
     
     extract_moa_features(
-        model_name=MODEL_NAMES.BASE_RESNET,
+        model_name="base_resnet",
         device=torch.device("cuda" if torch.cuda.is_available() else "cpu"), 
-        batch_size=16, 
+        batch_size=32, 
         data_root="/scratch/cv-course2025/group8",
         compounds=constants.COMPOUNDS)

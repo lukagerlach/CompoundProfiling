@@ -1,3 +1,4 @@
+import sys
 from pybbbc import BBBC021
 
 def download_bbbc021(data_root: str = "/scratch/cv-course2025/group8") -> None:
@@ -54,7 +55,18 @@ def preprocess_bbbc021(data_root: str = "/scratch/cv-course2025/group8") -> None
     print(f"BBBC021 dataset preprocessed and ready for use at {data_root}.")
 
 if __name__ == "__main__":
-    # Example usage
-    download_bbbc021()
-    preprocess_bbbc021()
-    print("BBBC021 dataset is ready for use.")
+    #download_bbbc021()
+    #preprocess_bbbc021()
+    #print("BBBC021 dataset is ready for use.")
+
+    # to be able to specify a path
+    if len(sys.argv) > 1:
+        data_root = sys.argv[1]
+    else:
+        data_root = "/scratch/cv-course2025/group8"
+
+    download_bbbc021(data_root)
+    preprocess_bbbc021(data_root)
+    print(f"BBBC021 dataset is ready for use at {data_root}/processed")
+
+# python3 data/pybbbc_loader.py /custom/data/path

@@ -6,7 +6,7 @@ import torch
 class MODEL_NAMES(Enum):
     BASE_RESNET = "base_resnet"
     SIMCLR = "resnet_simclr"
-    DINO = "resnet_wsdino"
+    WSDINO = "resnet_wsdino"
 
 def load_pretrained_model(model_name: MODEL_NAMES, weight_path='/scratch/cv-course2025/group8/model_weights'):
     """Load pretrained ResNet50 model."""
@@ -15,8 +15,14 @@ def load_pretrained_model(model_name: MODEL_NAMES, weight_path='/scratch/cv-cour
     if model_name == MODEL_NAMES.BASE_RESNET:
         return load_pretrained_resnet50(weights="IMAGENET1K_V2")
         
-    elif model_name == MODEL_NAMES.SIMCLR:
-        return load_pretrained_model_from_weights("resnet50_simclr", weight_path)
+    #elif model_name == MODEL_NAMES.SIMCLR:
+    #    return load_pretrained_model_from_weights("resnet50_simclr", weight_path)
+    
+    elif model_name in [MODEL_NAMES.SIMCLR, MODEL_NAMES.WSDINO]:
+        return load_pretrained_model_from_weights(model_name, weight_path)
+    
+    else:
+        raise ValueError(f"Model name '{model_name}' not recognized.")
 
 def load_pretrained_resnet50(weights: str = "IMAGENET1K_V2") -> object:
     """Load pretrained ResNet50 model.
@@ -43,6 +49,9 @@ def load_pretrained_resnet50(weights: str = "IMAGENET1K_V2") -> object:
     return pretrained_model
 
 def load_pretrained_model_from_weights(model_name: str, weight_path: str) -> nn.Module:
+# I think having mobdel name be a string like this instead of an enum will cause an error? is so use this:
+#def load_pretrained_model_from_weights(model_enum: MODEL_NAMES, weight_path: str) -> nn.Module:
+#    model_name = model_enum.value
     # TODO: Test this after we trained models
     """Load pretrained ResNet50 model from custom weights.
     

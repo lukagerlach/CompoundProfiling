@@ -1,6 +1,22 @@
+from enum import Enum
 from torchvision import models
 import torch.nn as nn
 import torch
+
+class MODEL_NAMES(Enum):
+    BASE_RESNET = "base_resnet"
+    SIMCLR = "resnet_simclr"
+    DINO = "resnet_wsdino"
+
+def load_pretrained_model(model_name: MODEL_NAMES, weight_path='/scratch/cv-course2025/group8/model_weights'):
+    """Load pretrained ResNet50 model."""
+    
+    # Load full model
+    if model_name == MODEL_NAMES.BASE_RESNET:
+        return load_pretrained_resnet50(weights="IMAGENET1K_V2")
+        
+    elif model_name == MODEL_NAMES.SIMCLR:
+        return load_pretrained_model_from_weights("resnet50_simclr", weight_path)
 
 def load_pretrained_resnet50(weights: str = "IMAGENET1K_V2") -> object:
     """Load pretrained ResNet50 model.
@@ -26,7 +42,30 @@ def load_pretrained_resnet50(weights: str = "IMAGENET1K_V2") -> object:
     pretrained_model.eval()
     return pretrained_model
 
-
+def load_pretrained_model_from_weights(model_name: str, weight_path: str) -> nn.Module:
+    # TODO: Test this after we trained models
+    """Load pretrained ResNet50 model from custom weights.
+    
+    Args:
+        model_name: Name of the model to load
+        weight_path: Path to the weights file
+        
+    Returns:
+        nn.Module: Pretrained ResNet50 model
+    """
+    print(f"Loading pretrained ResNet50 from {weight_path}...")
+    
+    # Load the model architecture
+    pretrained_model = models.resnet50(weights=None)
+    
+    # Load the weights
+    try:
+        pretrained_model.load_state_dict(torch.load(f"{weight_path}/{model_name.value}.pth"))
+    except FileNotFoundError:
+        raise ValueError(f"Weight file '{model_name}.pth' not found in '{weight_path}'")
+    
+    pretrained_model.eval()
+    return pretrained_model
 
 def create_feature_extractor(pretrained_model: nn.Module) -> nn.Module:
     """Create a feature extractor from a pretrained ResNet50 model.

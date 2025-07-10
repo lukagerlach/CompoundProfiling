@@ -100,25 +100,32 @@ def extract_moa_features(model_name: ModelName, device, batch_size = 16, data_ro
                         batch_images = batch[0].to(device)
                         features = feature_extractor(batch_images)
                         features = features.squeeze()  # Remove spatial dimensions
+                        if len(features.shape) == 1:
+                            features = features.unsqueeze(0)
                         all_features.append(features.cpu())
                 
-                # Compute average features
                 all_features = torch.cat(all_features, dim=0)
-                avg_features = torch.mean(all_features, dim=0)
-                
-                # Create result as tuple (key, feature)
-                result = (key, avg_features)
-                
-                # Create filename: compound_concentration
-                filename = f"{compound_name}_{concentration}.pkl".replace(' ', '_').replace('/', '_')
-                filepath = os.path.join(output_dir, filename)
-                
-                # Save to file
-                with open(filepath, 'wb') as f:
-                    pickle.dump(result, f)
-                
-                print(f"Saved features to {filepath}")
-                
+
+                if compound_name == "DMSO":
+                    # Save one .pkl per image (for TVN)
+                    for i, feature in enumerate(all_features):
+                        filename = f"{compound_name}_{concentration}_img{i}.pkl".replace(' ', '_').replace('/', '_')
+                        filepath = os.path.join(output_dir, filename)
+                        result = (key, feature)
+                        with open(filepath, 'wb') as f:
+                            pickle.dump(result, f)
+                    print(f"Saved {len(all_features)} per-image features for DMSO group to {output_dir} for TVN")
+
+                else:
+                    # Save average feature (standard)
+                    avg_features = torch.mean(all_features, dim=0)
+                    result = (key, avg_features)
+                    filename = f"{compound_name}_{concentration}.pkl".replace(' ', '_').replace('/', '_')
+                    filepath = os.path.join(output_dir, filename)
+                    with open(filepath, 'wb') as f:
+                        pickle.dump(result, f)
+                    print(f"Saved averaged features to {filepath}")
+
             except Exception as e:
                 print(f"Error processing group {compound_name}_{concentration}: {e}. Skipping...")
                 continue

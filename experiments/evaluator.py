@@ -13,7 +13,7 @@ from experiments.tvn import TypicalVariationNormalizer
 
 DistanceMeasure = Literal["l1", "l2", "cosine"]
 
-def evaluate_model(model_name: ModelName, data: BBBC021, device, distance_measure: DistanceMeasure = "cosine", nsc_eval = True, batch_size = 16, apply_tvn=False) -> Dict[str, float]:
+def evaluate_model(model_name: ModelName, data: BBBC021, device, distance_measure: DistanceMeasure = "cosine", nsc_eval = True, batch_size = 16, apply_tvn=True) -> Dict[str, float]:
     """
     Evaluate MOA prediction using 1-nearest neighbor with specified distance measure on pre-extracted features.
     

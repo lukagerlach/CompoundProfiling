@@ -9,10 +9,11 @@ from torch.utils.data import DataLoader
 from pybbbc import BBBC021, constants
 
 from models.resnet_50_base import load_pretrained_model, create_feature_extractor, ModelName
+from experiments.tvn import TypicalVariationNormalizer
 
 DistanceMeasure = Literal["l1", "l2", "cosine"]
 
-def evaluate_model(model_name: ModelName, data: BBBC021, device, distance_measure: DistanceMeasure = "cosine", nsc_eval = True, batch_size = 16) -> Dict[str, float]:
+def evaluate_model(model_name: ModelName, data: BBBC021, device, distance_measure: DistanceMeasure = "cosine", nsc_eval = True, batch_size = 16, apply_tvn=False) -> Dict[str, float]:
     """
     Evaluate MOA prediction using 1-nearest neighbor with specified distance measure on pre-extracted features.
     
@@ -64,6 +65,16 @@ def evaluate_model(model_name: ModelName, data: BBBC021, device, distance_measur
     
     # Convert to tensor
     stored_features = torch.stack(stored_features)
+
+    # TVN
+    if apply_tvn:
+        dmso_indices = [i for i, k in enumerate(stored_keys) if k[0] == "DMSO"]
+        if not dmso_indices:
+            raise ValueError("No DMSO (negative control) entries found for TVN.")
+        dmso_features = torch.stack([stored_features[i] for i in dmso_indices])
+        tvn = TypicalVariationNormalizer()
+        tvn.fit(dmso_features)
+        stored_features = torch.stack([tvn.transform(f) for f in stored_features])
     
     # Group evaluation data by treatment (compound × concentration)
     treatment_groups = {}
@@ -127,6 +138,10 @@ def evaluate_model(model_name: ModelName, data: BBBC021, device, distance_measur
         # Compute average features for this treatment (like in extractor)
         avg_treatment_features = torch.mean(treatment_features, dim=0)
         
+        # TVN
+        if apply_tvn:
+            avg_treatment_features = tvn.transform(avg_treatment_features)
+
         # Compute distances/similarities with average features
         if distance_measure == "cosine":
             features_norm = F.normalize(avg_treatment_features, p=2, dim=0)

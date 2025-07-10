@@ -120,8 +120,10 @@ if __name__ == "__main__":
     os.environ['CUDA_VISIBLE_DEVICES'] = '1'
     
     extract_moa_features(
-        model_name=MODEL_NAMES.BASE_RESNET,
+        # model_name=MODEL_NAMES.BASE_RESNET,
+        model_name=MODEL_NAMES.WSDINO,
         device=torch.device("cuda" if torch.cuda.is_available() else "cpu"), 
         batch_size=16, 
         data_root="/scratch/cv-course2025/group8",
         compounds=constants.COMPOUNDS)
+    

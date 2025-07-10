@@ -3,19 +3,17 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset
 from torchvision import transforms
-from pybbbc import BBBC021
 from models.resnet_50_base import load_pretrained_model, MODEL_NAMES
 
-class BBBC021TorchDataset(Dataset):
+class BBBC021WeakLabelDataset(Dataset):
     """
-    PyTorch-compatible dataset wrapper for the BBBC021 dataset using pybbbc.
+    PyTorch-compatible dataset wrapper for BBBC021 using weak labels (compound IDs).
 
     Each sample consists of:
         - An image tensor (optionally transformed)
-        - A label corresponding to the Mechanism of Action (MoA) class index
-
-    Filters out samples with unknown MoA ('null'), and assigns a unique index
-    to each known MoA.
+        - A weak label: the compound ID (as an index)
+    
+    Filters out samples with unknown MoA ('null').
     """
     def __init__(self, bbbc021, transform=None):
         """
@@ -23,38 +21,38 @@ class BBBC021TorchDataset(Dataset):
             bbbc021: An instance of pybbbc.BBBC021
             transform: A torchvision transform to apply to each image
         """
-        self.bbbc021 = bbbc021
+        #self.bbbc021 = bbbc021
         self.transform = transform
 
-        # Create MoA → class index mapping (excluding 'null')
-        self.moa_to_idx = {
-            moa: idx for idx, moa in enumerate(sorted(set(
-                m[1][2] for _, m in bbbc021 if m[1][2] != 'null'
+        # Filter out samples with unknown MoA
+        self.valid_samples = [
+            # (img, self.compound_to_idx[m[1][0]])
+            # for img, m in bbbc021 if m[1][2] != 'null'
+            (img, metadata) for img, metadata in bbbc021
+            if metadata.compound.moa != 'null'
+        ]
+
+                # Create Compound → index mapping
+        self.compound_to_idx = {
+            compound: idx for idx, compound in enumerate(sorted(set(
+                # m[1][0] for _, m in bbbc021 if m[1][2] != 'null'  # skip unknown MoAs
+                meta.compound.compound for _, meta in self.valid_samples
             )))
         }
 
-        # Build a list of valid (image, label) pairs
-        self.valid_samples = [
-            (img, self.moa_to_idx[m[1][2]])
-            for img, m in bbbc021 if m[1][2] != 'null'
-        ]
-
     def __len__(self):
-        """Returns number of valid samples"""
         return len(self.valid_samples)
 
     def __getitem__(self, idx):
-        """
-        Args:
-            idx: Index of the sample
-
-        Returns:
-            (transformed image tensor, label index)
-        """
-        img, label = self.valid_samples[idx]
+        #img, weak_label = self.valid_samples[idx]
+        #moa = self.bbbc021[idx][1][2]  # access full meta for eval
+        img, meta = self.valid_samples[idx]
+        compound_id = meta.compound.compound
+        weak_label = self.compound_to_idx[compound_id]
+        moa = meta.compound.moa
         if self.transform:
             img = self.transform(img)
-        return img, label
+        return img, weak_label, moa
 
 def get_resnet50(num_classes, model_type=MODEL_NAMES.BASE_RESNET):
     """

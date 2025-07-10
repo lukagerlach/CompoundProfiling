@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset
 from torchvision import transforms
-from models.resnet_50_base import load_pretrained_model, MODEL_NAMES
+from models.resnet_50_base import load_pretrained_model
 
 class BBBC021WeakLabelDataset(Dataset):
     """
@@ -54,20 +54,20 @@ class BBBC021WeakLabelDataset(Dataset):
             img = self.transform(img)
         return img, weak_label, moa
 
-def get_resnet50(num_classes, model_type=MODEL_NAMES.BASE_RESNET):
+def get_resnet50(num_classes, model_type="base_resnet"):
     """
     Loads a ResNet-50 backbone with the final layer replaced for classification.
 
     Args:
         num_classes: Number of output classes (e.g., number of unique MoAs)
-        model_type: Enum specifying the type of pretrained model to load, must be MODEL_NAMES.BASE_RESNET or MODEL_NAMES.WSDINO
+        model_type: should be "base_resnet" or "wsdino"
 
     Returns:
         A torch.nn.Module (ResNet-50 with custom head)
     """
     model = load_pretrained_model(model_type)
     in_feats = model.fc.in_features
-    model.fc = nn.Linear(in_feats, num_classes)  # replace head
+    model.fc = nn.Linear(in_feats, num_classes)
     return model
 
 def dino_loss(student_out, teacher_out, temp=0.07):

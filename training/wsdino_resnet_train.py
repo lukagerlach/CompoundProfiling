@@ -2,7 +2,6 @@ import torch
 from torch.utils.data import DataLoader
 import torchvision.transforms as T
 from pybbbc import BBBC021
-from models.resnet_50_base import MODEL_NAMES
 from models.wsdino_resnet import (
     BBBC021WeakLabelDataset,
     get_resnet50,
@@ -35,9 +34,8 @@ def train():
     teacher = get_resnet50(num_classes=num_compounds).to(device)
 
     # get weights from file
-    # student = get_resnet50(num_classes=num_compounds, model_type=MODEL_NAMES.WSDINO).to(device)
-    # teacher = get_resnet50(num_classes=num_compounds, model_type=MODEL_NAMES.WSDINO).to(device)
-
+    # student = get_resnet50(num_classes=num_compounds, model_type="wsdino").to(device)
+    # teacher = get_resnet50(num_classes=num_compounds, model_type="wsdino".WSDINO).to(device)
 
     teacher.load_state_dict(student.state_dict())
     for p in teacher.parameters():

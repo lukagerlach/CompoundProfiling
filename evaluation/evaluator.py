@@ -4,38 +4,26 @@ import os
 import numpy as np
 from typing import Literal, Dict
 import torch.nn.functional as F
-import torchvision.transforms as transforms
-from torch.utils.data import DataLoader
 from pybbbc import BBBC021, constants
 
-from models.load_model import load_pretrained_model, create_feature_extractor, ModelName
+from models.load_model import ModelName
+from experiments.tvn import TypicalVariationNormalizer
 
 DistanceMeasure = Literal["l1", "l2", "cosine"]
 
-def evaluate_model(model_name: ModelName, data: BBBC021, device, distance_measure: DistanceMeasure = "cosine", nsc_eval = True, batch_size = 16) -> Dict[str, float]:
+def evaluate_model(model_name: ModelName, distance_measure: DistanceMeasure = "cosine", nsc_eval = True, tvn: bool = False) -> Dict[str, float]:
     """
     Evaluate MOA prediction using 1-nearest neighbor with specified distance measure on pre-extracted features.
     
     Args:
-        model_name: Name of the model to use for feature extraction.
-        data: BBBC021 dataset object containing images and metadata.
-        device: Device to run inference on (CPU or GPU).
+        model_name: Name of the model to use for loading pre-computed features.
         distance_measure: Distance measure to use for 1NN ("l1", "l2", or "cosine").
         nsc_eval: If True, same compound (all concentrations) is not used for evaluation.
-        batch_size: Batch size for processing images.
+        tvn: If True, apply Typical Variation Normalization to features.
     
     Returns:
         Dict[str, float]: Dictionary with per-compound accuracies and total accuracy
     """
-    model = load_pretrained_model(model_name)
-    feature_extractor = create_feature_extractor(model)
-    feature_extractor = feature_extractor.to(device)
-    feature_extractor.eval()
-    
-    transform = transforms.Compose([
-        transforms.Resize((224, 224)),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-    ])
     
     # Load pre-computed features
     features_dir = f"/scratch/cv-course2025/group8/bbbc021_features/{model_name}"
@@ -44,7 +32,7 @@ def evaluate_model(model_name: ModelName, data: BBBC021, device, distance_measur
         raise FileNotFoundError(f"Features directory not found: {features_dir}")
     
     # Load all feature files
-    stored_features = []
+    stored_features_dict = {}
     stored_keys = []
     
     for filename in os.listdir(features_dir):
@@ -53,100 +41,107 @@ def evaluate_model(model_name: ModelName, data: BBBC021, device, distance_measur
             try:
                 with open(filepath, 'rb') as f:
                     key, features = pickle.load(f)
-                    stored_features.append(features)
+                    stored_features_dict[key] = features
                     stored_keys.append(key)  # (compound, concentration, moa)
             except Exception as e:
                 print(f"Error loading {filepath}: {e}")
                 continue
     
-    if not stored_features:
+    if not stored_features_dict:
         raise ValueError("No valid feature files found")
     
-    # Convert to tensor
-    stored_features = torch.stack(stored_features)
-    
-    # Group evaluation data by treatment (compound × concentration)
-    treatment_groups = {}
-    for i, (image, metadata) in enumerate(data):
-        if metadata.compound.moa == 'null':
-            continue
+    # Apply TVN if requested
+    if tvn:
+        # Load DMSO features for fitting TVN from DMSO subfolder
+        dmso_dir = os.path.join(features_dir, "DMSO")
+        if not os.path.exists(dmso_dir):
+            raise ValueError(f"DMSO directory not found: {dmso_dir}")
         
-        # Key: (compound, concentration, moa)
-        key = (metadata.compound.compound, metadata.compound.concentration, metadata.compound.moa)
-        if key not in treatment_groups:
-            treatment_groups[key] = []
-        treatment_groups[key].append((i, image, metadata))
+        dmso_features = []
+        for filename in os.listdir(dmso_dir):
+            if filename.endswith('.pkl'):
+                filepath = os.path.join(dmso_dir, filename)
+                try:
+                    with open(filepath, 'rb') as f:
+                        key, features = pickle.load(f)
+                        dmso_features.append(features)
+                except Exception as e:
+                    print(f"Error loading DMSO features from {filepath}: {e}")
+                    continue
+        
+        if not dmso_features:
+            raise ValueError("No DMSO features found for TVN fitting")
+        
+        dmso_features = torch.stack(dmso_features)
+        
+        # Fit and transform features using TVN
+        tvn_normalizer = TypicalVariationNormalizer()
+        tvn_normalizer.fit(dmso_features)
+        for key in stored_features_dict:
+            stored_features_dict[key] = tvn_normalizer.transform(stored_features_dict[key].unsqueeze(0)).squeeze(0)
     
     # Track results
     total_correct = 0
     total_predictions = 0
     compound_results = {}
     
-    # Process each treatment
-    for key, samples in treatment_groups.items():
-        compound_name, concentration, true_moa = key
-        print(f"Evaluating treatment: {compound_name}@{concentration} ({true_moa}) - {len(samples)} samples")
+    # Process each treatment from stored features
+    for treatment_key in stored_features_dict.keys():
+        compound_name, concentration, true_moa = treatment_key
+        
+        # Skip DMSO compounds
+        if compound_name == "DMSO":
+            continue
+            
+        print(f"Evaluating treatment: {compound_name}@{concentration} ({true_moa})")
         
         # Create filtered reference features (exclude current compound if NSC is enabled)
         if nsc_eval:
-            valid_indices = [i for i, ref_key in enumerate(stored_keys) if ref_key[0] != compound_name]
-            if not valid_indices:
+            reference_keys = [key for key in stored_keys if key[0] != compound_name]
+            if not reference_keys:
                 print(f"Warning: No reference features available for compound {compound_name} with NSC evaluation. Skipping...")
                 continue
-            reference_features = stored_features[valid_indices]
-            reference_keys = [stored_keys[i] for i in valid_indices]
         else:
-            reference_features = stored_features
             reference_keys = stored_keys
         
-        # Prepare images for this treatment
-        images = []
-        for _, image, metadata in samples:
-            if isinstance(image, np.ndarray):
-                image = torch.from_numpy(image).float()
-            image = transform(image)
-            images.append(image)
+        # Find pre-computed features for this treatment
+        treatment_key = (compound_name, concentration, true_moa)
+        if treatment_key not in stored_features_dict:
+            print(f"Warning: No pre-computed features found for treatment {compound_name}@{concentration}. Skipping...")
+            continue
         
-        # Create DataLoader for this treatment
-        dataset = torch.utils.data.TensorDataset(torch.stack(images))
-        dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
-        
-        # Extract features for all images of this treatment
-        treatment_features = []
-        with torch.no_grad():
-            for batch in dataloader:
-                batch_images = batch[0].to(device)
-                features = feature_extractor(batch_images)
-                features = features.squeeze()  # Remove spatial dimensions
-                if len(features.shape) == 1:  # Handle single image case
-                    features = features.unsqueeze(0)
-                treatment_features.append(features.cpu())
-        
-        treatment_features = torch.cat(treatment_features, dim=0)
-        
-        # Compute average features for this treatment (like in extractor)
-        avg_treatment_features = torch.mean(treatment_features, dim=0)
+        # Get the stored features for this treatment
+        avg_treatment_features = stored_features_dict[treatment_key]
         
         # Compute distances/similarities with average features
-        if distance_measure == "cosine":
-            features_norm = F.normalize(avg_treatment_features, p=2, dim=0)
-            reference_features_norm = F.normalize(reference_features, p=2, dim=1)
-            similarities = torch.mm(reference_features_norm, features_norm.unsqueeze(1)).squeeze()
-            nearest_idx = torch.argmax(similarities).item()
+        best_score = float('-inf') if distance_measure == "cosine" else float('inf')
+        best_idx = -1
+        
+        for i, ref_key in enumerate(reference_keys):
+            ref_features = stored_features_dict[ref_key]
             
-        elif distance_measure == "l2":
-            distances = torch.norm(reference_features - avg_treatment_features.unsqueeze(0), p=2, dim=1)
-            nearest_idx = torch.argmin(distances).item()
-            
-        elif distance_measure == "l1":
-            distances = torch.norm(reference_features - avg_treatment_features.unsqueeze(0), p=1, dim=1)
-            nearest_idx = torch.argmin(distances).item()
-            
-        else:
-            raise ValueError(f"Unknown distance measure: {distance_measure}")
+            if distance_measure == "cosine":
+                features_norm = F.normalize(avg_treatment_features, p=2, dim=0)
+                ref_features_norm = F.normalize(ref_features, p=2, dim=0)
+                score = torch.dot(ref_features_norm, features_norm).item()
+                if score > best_score:
+                    best_score = score
+                    best_idx = i
+            elif distance_measure == "l2":
+                score = torch.norm(ref_features - avg_treatment_features, p=2).item()
+                if score < best_score:
+                    best_score = score
+                    best_idx = i
+            elif distance_measure == "l1":
+                score = torch.norm(ref_features - avg_treatment_features, p=1).item()
+                if score < best_score:
+                    best_score = score
+                    best_idx = i
+            else:
+                raise ValueError(f"Unknown distance measure: {distance_measure}")
         
         # Get predicted MOA
-        predicted_moa = reference_keys[nearest_idx][2]
+        predicted_moa = reference_keys[best_idx][2]
         
         # Check if prediction is correct
         if predicted_moa == true_moa:
@@ -193,16 +188,9 @@ def evaluate_model(model_name: ModelName, data: BBBC021, device, distance_measur
 
 if __name__ == "__main__":
     model_name = "simclr"
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    
-    # Load BBBC021 dataset
-    data_root = "/scratch/cv-course2025/group8"
-    moas = constants.MOA
-    moas.remove("DMSO")
-    data = BBBC021(root_path=data_root, moa=moas)  # Load all compounds
     
     # Evaluate model
-    results = evaluate_model(model_name, data, device, distance_measure="cosine", nsc_eval=True, batch_size=128)
+    results = evaluate_model(model_name, distance_measure="cosine", nsc_eval=True, tvn=False)
     
     print("\nEvaluation completed. Results:")
     for key, value in results.items():

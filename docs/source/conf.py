@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.abspath("../.."))
 
 # -- Project information -----------------------------------------------------
 
-project = "Compound Profiling"
+project = "Compound MOA Prediction"
 copyright = "2025, Vincent von Häfen, Luka Gerlach"
 author = "Vincent von Häfen, Luka Gerlach"
 release = "0.1.0"

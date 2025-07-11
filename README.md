@@ -1,5 +1,10 @@
 # CompoundProfiling
+
+[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://lukagerlach.github.io/CompoundProfiling/)
+
 Pharmacological compound prediction from cell images
+
+This project implements two self-supervised learning approaches for predicting the mechanism of action (MOA) of pharmacological compounds on the [BBBC021 human cell imaging dataset](https://bbbc.broadinstitute.org/BBBC021).
 
 ## Setup
 

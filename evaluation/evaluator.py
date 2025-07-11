@@ -50,35 +50,8 @@ def evaluate_model(model_name: ModelName, distance_measure: DistanceMeasure = "c
     if not stored_features_dict:
         raise ValueError("No valid feature files found")
     
-    # Apply TVN if requested
-    if tvn:
-        # Load DMSO features for fitting TVN from DMSO subfolder
-        dmso_dir = os.path.join(features_dir, "DMSO")
-        if not os.path.exists(dmso_dir):
-            raise ValueError(f"DMSO directory not found: {dmso_dir}")
-        
-        dmso_features = []
-        for filename in os.listdir(dmso_dir):
-            if filename.endswith('.pkl'):
-                filepath = os.path.join(dmso_dir, filename)
-                try:
-                    with open(filepath, 'rb') as f:
-                        key, features = pickle.load(f)
-                        dmso_features.append(features)
-                except Exception as e:
-                    print(f"Error loading DMSO features from {filepath}: {e}")
-                    continue
-        
-        if not dmso_features:
-            raise ValueError("No DMSO features found for TVN fitting")
-        
-        dmso_features = torch.stack(dmso_features)
-        
-        # Fit and transform features using TVN
-        tvn_normalizer = TypicalVariationNormalizer()
-        tvn_normalizer.fit(dmso_features)
-        for key in stored_features_dict:
-            stored_features_dict[key] = tvn_normalizer.transform(stored_features_dict[key].unsqueeze(0)).squeeze(0)
+    # if tvn:
+        # TODO: maybe add some logic to compare no TVN with TVN?
     
     # Track results
     total_correct = 0

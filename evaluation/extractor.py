@@ -5,23 +5,30 @@ import torch
 from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 import numpy as np
+import os
 
 from models.load_model import load_pretrained_model, create_feature_extractor, ModelName
 from pybbbc import BBBC021, constants
+from experiments.tvn import TypicalVariationNormalizer  # Import TVN module
 
-import os
-
-
-def extract_moa_features(model_name: ModelName, device, batch_size = 16, data_root: str = "/scratch/cv-course2025/group8", compounds: list[str] = None) -> None:
+def extract_moa_features(
+        model_name: ModelName, 
+        device, 
+        batch_size=16, 
+        data_root: str = "/scratch/cv-course2025/group8", 
+        compounds: list[str] = None, 
+        tvn: bool = False
+) -> None:
     """
     Extract features for the BBBC021 dataset using a pretrained ResNet50 model.
     
     Args:
-        model_name: Name of the model to use. Is of type MODEL_NAMES.
-        device: Device to run the model on
-        batch_size: Batch size for data loading
+        model_name: Name of the model to use. Is of type ModelName.
+        device: Device to run the model on.
+        batch_size: Batch size for data loading.
         data_root: Root directory where the BBBC021 dataset is stored.
         compounds: List of compounds to process. If None, all compounds will be processed.
+        tvn: If True, apply Typical Variation Normalization to features before averaging and saving.
     """
     
     # Load pretrained ResNet50 model
@@ -39,10 +46,9 @@ def extract_moa_features(model_name: ModelName, device, batch_size = 16, data_ro
     else:
         for compound in compounds:
             if compound not in constants.COMPOUNDS:
-                raise ValueError(f"Compound '{compound}' is not a valid compound. "
-                                 f"Valid compounds are: {constants.COMPOUNDS}")
-    
-    # Create output directory with model name
+                raise ValueError(f"Compound '{compound}' is not valid. Valid compounds: {constants.COMPOUNDS}")
+
+    # Output directory
     output_dir = os.path.join(data_root, "bbbc021_features", model_name)
     os.makedirs(output_dir, exist_ok=True)
     
@@ -53,12 +59,16 @@ def extract_moa_features(model_name: ModelName, device, batch_size = 16, data_ro
     # Set device
     feature_extractor = feature_extractor.to(device)
     feature_extractor.eval()
-    
+
+    # Collect per-compound features
+    compound_features = {}
+    tvn_features = []
+
     # Process each compound dynamically
-    for compound in compounds:        
-        data = BBBC021(root_path=data_root, compound=compound)  # Fixed: use single compound
+    for compound in compounds:
+        data = BBBC021(root_path=data_root, compound=compound)
         print(f"Processing Compound: {compound} with {len(data.images)} images")
-        
+
         # Dictionary to store images grouped by (compound, concentration, moa)
         image_groups: Dict[Tuple[str, float, str], list[torch.Tensor]] = {}
         
@@ -74,6 +84,7 @@ def extract_moa_features(model_name: ModelName, device, batch_size = 16, data_ro
             
             if key not in image_groups:
                 image_groups[key] = []
+
             # Convert numpy array to tensor if needed
             if isinstance(image, np.ndarray):
                 image = torch.from_numpy(image).float()
@@ -108,38 +119,56 @@ def extract_moa_features(model_name: ModelName, device, batch_size = 16, data_ro
                 
                 all_features = torch.cat(all_features, dim=0)
 
-                if compound_name == "DMSO":
-                    # Save one .pkl per image (for TVN) in DMSO subfolder
-                    for i, feature in enumerate(all_features):
-                        filename = f"{compound_name}_{concentration}_img{i}.pkl".replace(' ', '_').replace('/', '_')
-                        filepath = os.path.join(dmso_dir, filename)
-                        result = (key, feature)
-                        with open(filepath, 'wb') as f:
-                            pickle.dump(result, f)
-                    print(f"Saved {len(all_features)} per-image features for DMSO group to {dmso_dir} for TVN")
+                if tvn and compound_name == "DMSO":
+                    tvn_features.append(all_features)  # Store for TVN fitting
 
-                else:
-                    # Save average feature (standard)
-                    avg_features = torch.mean(all_features, dim=0)
-                    result = (key, avg_features)
-                    filename = f"{compound_name}_{concentration}.pkl".replace(' ', '_').replace('/', '_')
-                    filepath = os.path.join(output_dir, filename)
-                    with open(filepath, 'wb') as f:
-                        pickle.dump(result, f)
-                    print(f"Saved averaged features to {filepath}")
+                compound_features[key] = all_features  # Store per-image features for every treatment
 
             except Exception as e:
                 print(f"Error processing group {compound_name}_{concentration}: {e}. Skipping...")
                 continue
 
+    # TVN logic
+    if tvn:
+        print("\nFitting TVN from DMSO images...")
+        if not tvn_features:
+            raise RuntimeError("No DMSO features found to fit TVN.")
+        dmso_concat = torch.cat(tvn_features, dim=0)
+        tvn = TypicalVariationNormalizer()
+        tvn.fit(dmso_concat)
+
+        print("Applying TVN and saving averaged features...")
+        for key, features in compound_features.items():
+            transformed = tvn.transform(features)
+            avg_feature = torch.mean(transformed, dim=0)
+            result = (key, avg_feature)
+            compound_name, concentration, _ = key
+            filename = f"{compound_name}_{concentration}.pkl".replace(" ", "_").replace("/", "_")
+            filepath = os.path.join(output_dir, filename)
+            with open(filepath, 'wb') as f:
+                pickle.dump(result, f)
+            print(f"Saved averaged TVN features to {filepath}")
+
+    else:
+        print("Saving non-TVN averaged features...")
+        for key, features in compound_features.items():
+            avg_feature = torch.mean(features, dim=0)
+            result = (key, avg_feature)
+            compound_name, concentration, _ = key
+            filename = f"{compound_name}_{concentration}.pkl".replace(" ", "_").replace("/", "_")
+            filepath = os.path.join(output_dir, filename)
+            with open(filepath, 'wb') as f:
+                pickle.dump(result, f)
+            print(f"Saved averaged features to {filepath}")
 
 # main function to run the feature extraction
 if __name__ == "__main__":
-    
     extract_moa_features(
-        model_name="simclr",
-        device=torch.device("cuda" if torch.cuda.is_available() else "cpu"), 
-        batch_size=128, 
+        model_name="simclr", 
+        # model_name="wsdino",
+        device=torch.device("cuda" if torch.cuda.is_available() else "cpu"),
+        batch_size=128,
         data_root="/scratch/cv-course2025/group8",
-        compounds=constants.COMPOUNDS)
-    
+        compounds=constants.COMPOUNDS,
+        tvn=True
+    )

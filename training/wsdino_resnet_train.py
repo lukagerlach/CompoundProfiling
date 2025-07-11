@@ -9,7 +9,7 @@ from models.wsdino_resnet import (
     update_teacher
 )
 
-def train():
+def train_wsdino():
     # Settings
     batch_size = 16
     epochs = 10
@@ -67,6 +67,17 @@ def train():
 
         avg_loss = total_loss / len(dataloader)
         print(f"Epoch {epoch+1}/{epochs}, Loss: {avg_loss:.4f}")
+
+        # Save model every save_every epochs
+        if (epoch + 1) % save_every == 0:
+            if isinstance(model, nn.DataParallel):
+                backbone_state = model.module.backbone.state_dict()
+            else:
+                backbone_state = model.backbone.state_dict()
+                
+            save_path = os.path.join(save_dir, f"resnet50_simclr_epoch_{epoch+1}.pth")
+            torch.save(backbone_state, save_path)
+            print(f"Model saved to {save_path}")
 
     # Save model
     torch.save(student.state_dict(), f"/scratch/cv-course2025/group8/model_weights/resnet50_wsdino.pth")

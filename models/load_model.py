@@ -17,6 +17,7 @@ def load_pretrained_model(model_name: ModelName, weight_path='/scratch/cv-course
     
     elif model_name == "wsdino":
         return load_pretrained_model_from_weights("resnet50_wsdino", weight_path)
+    
 
 def load_pretrained_resnet50(weights: str = "IMAGENET1K_V2") -> object:
     """Load pretrained ResNet50 model.
@@ -43,6 +44,7 @@ def load_pretrained_resnet50(weights: str = "IMAGENET1K_V2") -> object:
     return pretrained_model
 
 def load_pretrained_model_from_weights(model_name: str, weight_path: str) -> nn.Module:
+    # TODO: Test this after we trained models
     """Load pretrained ResNet50 model from custom weights.
     
     Args:

@@ -44,7 +44,7 @@ html_theme_options = {
     "show_navbar_depth": 2,
 }
 
-html_title = "Compound Profiling"
+html_title = "Compound MOA Prediction"
 
 # -- Extension configuration -------------------------------------------------
 

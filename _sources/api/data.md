@@ -1,25 +1,9 @@
 # Data
 
-```{eval-rst}
-.. automodule:: data
-   :members:
-   :undoc-members:
-   :show-inheritance:
-```
-
-## Datasets
+## BBBC021 Loader
 
 ```{eval-rst}
-.. automodule:: data.datasets
-   :members:
-   :undoc-members:
-   :show-inheritance:
-```
-
-## Transformations
-
-```{eval-rst}
-.. automodule:: data.transforms
+.. automodule:: data.pybbbc_loader
    :members:
    :undoc-members:
    :show-inheritance:

@@ -44,7 +44,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Evaluation" href="evaluation.html" />
-    <link rel="prev" title="Data" href="data.html" />
+    <link rel="prev" title="Models" href="models.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -152,23 +152,22 @@
         <ul class="nav bd-sidenav bd-sidenav__home-link">
             <li class="toctree-l1">
                 <a class="reference internal" href="../index.html">
-                    Compound Profiling Documentation
+                    CompoundProfiling
                 </a>
             </li>
         </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../readme.html">CompoundProfiling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data.html">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Training</a></li>
 <li class="toctree-l2"><a class="reference internal" href="evaluation.html">Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experiments.html">Experiments</a></li>
 </ul>
 </details></li>
 </ul>
@@ -392,8 +391,18 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#trainers">Trainers</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#losses">Losses</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-training.simclr_vanilla_train">SimCLR Vanilla Training</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#training.simclr_vanilla_train.train_simclr_vanilla"><code class="docutils literal notranslate"><span class="pre">train_simclr_vanilla()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-training.simclr_ws_train">SimCLR Weakly-Supervised Training</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#training.simclr_ws_train.train_simclr"><code class="docutils literal notranslate"><span class="pre">train_simclr()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-training.wsdino_resnet_train">WS-DINO ResNet Training</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#training.wsdino_resnet_train.train"><code class="docutils literal notranslate"><span class="pre">train()</span></code></a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -408,11 +417,62 @@ document.write(`
   <section id="module-training">
 <span id="training"></span><h1>Training<a class="headerlink" href="#module-training" title="Link to this heading">#</a></h1>
 <p>Training module for compound profiling.</p>
-<section id="trainers">
-<h2>Trainers<a class="headerlink" href="#trainers" title="Link to this heading">#</a></h2>
+<section id="module-training.simclr_vanilla_train">
+<span id="simclr-vanilla-training"></span><h2>SimCLR Vanilla Training<a class="headerlink" href="#module-training.simclr_vanilla_train" title="Link to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="training.simclr_vanilla_train.train_simclr_vanilla">
+<span class="sig-prename descclassname"><span class="pre">training.simclr_vanilla_train.</span></span><span class="sig-name descname"><span class="pre">train_simclr_vanilla</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/scratch/cv-course2025/group8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0003</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_every</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/scratch/cv-course2025/group8/model_weights/vanilla'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compound_aware</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/training/simclr_vanilla_train.html#train_simclr_vanilla"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#training.simclr_vanilla_train.train_simclr_vanilla" title="Link to this definition">#</a></dt>
+<dd><p>Train vanilla SimCLR model using two augmentations of the same image,
+optionally with compound-aware loss that excludes same-compound negatives.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root_path</strong> – Path to BBBC021 dataset</p></li>
+<li><p><strong>epochs</strong> – Number of training epochs</p></li>
+<li><p><strong>batch_size</strong> – Batch size for training</p></li>
+<li><p><strong>learning_rate</strong> – Learning rate for optimizer</p></li>
+<li><p><strong>temperature</strong> – Temperature parameter for contrastive loss</p></li>
+<li><p><strong>projection_dim</strong> – Output dimension of projection head</p></li>
+<li><p><strong>device</strong> – Device to train on</p></li>
+<li><p><strong>save_every</strong> – Save model every N epochs</p></li>
+<li><p><strong>save_dir</strong> – Directory to save model weights</p></li>
+<li><p><strong>compound_aware</strong> – If True, uses compound-aware loss that excludes same-compound negatives</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="losses">
-<h2>Losses<a class="headerlink" href="#losses" title="Link to this heading">#</a></h2>
+<section id="module-training.simclr_ws_train">
+<span id="simclr-weakly-supervised-training"></span><h2>SimCLR Weakly-Supervised Training<a class="headerlink" href="#module-training.simclr_ws_train" title="Link to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="training.simclr_ws_train.train_simclr">
+<span class="sig-prename descclassname"><span class="pre">training.simclr_ws_train.</span></span><span class="sig-name descname"><span class="pre">train_simclr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/scratch/cv-course2025/group8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">512</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0003</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_every</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/training/simclr_ws_train.html#train_simclr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#training.simclr_ws_train.train_simclr" title="Link to this definition">#</a></dt>
+<dd><p>Training wrapper for SimCLR model on BBBC021 dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root_path</strong> – Path to BBBC021 dataset</p></li>
+<li><p><strong>epochs</strong> – Number of training epochs</p></li>
+<li><p><strong>batch_size</strong> – Batch size for training</p></li>
+<li><p><strong>learning_rate</strong> – Learning rate for optimizer</p></li>
+<li><p><strong>temperature</strong> – Temperature parameter for contrastive loss</p></li>
+<li><p><strong>projection_dim</strong> – Output dimension of projection head</p></li>
+<li><p><strong>device</strong> – Device to train on</p></li>
+<li><p><strong>save_every</strong> – Save model every N epochs</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-training.wsdino_resnet_train">
+<span id="ws-dino-resnet-training"></span><h2>WS-DINO ResNet Training<a class="headerlink" href="#module-training.wsdino_resnet_train" title="Link to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="training.wsdino_resnet_train.train">
+<span class="sig-prename descclassname"><span class="pre">training.wsdino_resnet_train.</span></span><span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/training/wsdino_resnet_train.html#train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#training.wsdino_resnet_train.train" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 </section>
 </section>
 
@@ -428,12 +488,12 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="data.html"
+       href="models.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Data</p>
+        <p class="prev-next-title">Models</p>
       </div>
     </a>
     <a class="right-next"
@@ -461,8 +521,18 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#trainers">Trainers</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#losses">Losses</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-training.simclr_vanilla_train">SimCLR Vanilla Training</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#training.simclr_vanilla_train.train_simclr_vanilla"><code class="docutils literal notranslate"><span class="pre">train_simclr_vanilla()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-training.simclr_ws_train">SimCLR Weakly-Supervised Training</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#training.simclr_ws_train.train_simclr"><code class="docutils literal notranslate"><span class="pre">train_simclr()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-training.wsdino_resnet_train">WS-DINO ResNet Training</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#training.wsdino_resnet_train.train"><code class="docutils literal notranslate"><span class="pre">train()</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

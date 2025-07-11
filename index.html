@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Compound Profiling Documentation &#8212; Compound Profiling</title>
+    <title>CompoundProfiling &#8212; Compound Profiling</title>
   
   
   
@@ -43,7 +43,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="CompoundProfiling" href="readme.html" />
+    <link rel="next" title="Installation" href="installation.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -153,23 +153,22 @@
         <ul class="nav bd-sidenav bd-sidenav__home-link">
             <li class="toctree-l1 current active">
                 <a class="reference internal" href="#">
-                    Compound Profiling Documentation
+                    CompoundProfiling
                 </a>
             </li>
         </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="readme.html">CompoundProfiling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="api/index.html">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="api/models.html">Models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/data.html">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html">Models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/training.html">Training</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/evaluation.html">Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/experiments.html">Experiments</a></li>
 </ul>
 </details></li>
 </ul>
@@ -383,7 +382,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Compound Profiling Documentation</h1>
+    <h1>CompoundProfiling</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -393,7 +392,25 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#approaches">Approaches</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#key-features">Key Features</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dataset">Dataset</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#usage">Usage</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#training-models">Training Models</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#feature-extraction">Feature Extraction</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation">Evaluation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visualization">Visualization</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#project-structure">Project Structure</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#results">Results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dependencies">Dependencies</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#license">License</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#useful-links">Useful Links</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contents">Contents</a><ul class="nav section-nav flex-column">
 </ul>
 </li>
@@ -409,16 +426,172 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="compound-profiling-documentation">
-<h1>Compound Profiling Documentation<a class="headerlink" href="#compound-profiling-documentation" title="Link to this heading">#</a></h1>
-<p>Welcome to the Compound Profiling project documentation!</p>
-<p>This project implements self-supervised learning approaches for predicting compound Mechanism of Action (MOA) using the BBBC021 human cell imaging dataset.</p>
+  <section id="compoundprofiling">
+<h1>CompoundProfiling<a class="headerlink" href="#compoundprofiling" title="Link to this heading">#</a></h1>
+<p><a class="reference external" href="https://lukagerlach.github.io/CompoundProfiling/"><img alt="Stable" src="https://img.shields.io/badge/docs-stable-blue.svg" /></a></p>
+<p><em>Predicting compound mechanisms of action from cellular imaging data</em></p>
+<p>This project explores self-supervised learning approaches for predicting the mechanism of action (MOA) of pharmacological compounds using microscopy images from the <a class="reference external" href="https://bbbc.broadinstitute.org/BBBC021">BBBC021 dataset</a>. We implement and compare three different representation learning methods to predict MOAs.</p>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
-<p>We benchmark two self-supervised learning algorithms by fine-tuning a ResNet-50 (pretrained on ImageNet):</p>
+<p>The BBBC021 dataset contains fluorescence microscopy images of human cells treated with various compounds at different concentrations. Each image captures three cellular components: actin filaments, microtubules, and nuclei. Our goal is to learn meaningful representations that can predict a compound’s mechanism of action based solely on the induced morphological changes.</p>
+<section id="approaches">
+<h3>Approaches<a class="headerlink" href="#approaches" title="Link to this heading">#</a></h3>
+<p><strong>1. Baseline ResNet-50</strong></p>
 <ul class="simple">
-<li><p><strong>SimCLR</strong>: Contrastive SSL approach with weak labels</p></li>
-<li><p><strong>WS-DINO</strong>: Non-contrastive SSL method with weak labels</p></li>
+<li><p>Standard ImageNet-pretrained ResNet-50 for feature extraction</p></li>
+<li><p>Provides a baseline for comparison with self-supervised methods</p></li>
+</ul>
+<p><strong>2. SimCLR (Self-Supervised Contrastive Learning)</strong></p>
+<ul class="simple">
+<li><p><em>Vanilla SimCLR</em>: Creates positive pairs from augmented versions of the same image</p></li>
+<li><p><em>Weakly-Supervised SimCLR</em>: Uses compound labels to form positive pairs from different images of the same compound, while treating different compounds as negatives</p></li>
+</ul>
+<p><strong>3. DINO (Self-Distillation)</strong></p>
+<ul class="simple">
+<li><p>Weakly-supervised adaptation using compound labels</p></li>
+<li><p>Student-teacher architecture with exponential moving average updates</p></li>
+</ul>
+</section>
+<section id="key-features">
+<h3>Key Features<a class="headerlink" href="#key-features" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>2 SSL Algortihm iImplementations</strong> to predict compound MOAs</p></li>
+<li><p><strong>Typical Variation Normalization (TVN)</strong>: Removes systematic noise by normalizing against DMSO control samples</p></li>
+<li><p><strong>Comprehensive Evaluation</strong>: 1-nearest neighbor classification with multiple distance metrics</p></li>
+<li><p><strong>Visualization Pipeline</strong>: t-SNE and UMAP embeddings for qualitative analysis</p></li>
+<li><p><strong>Jupyter Notebooks</strong> for easy experimenting and exploration</p></li>
+<li><p><strong>Documentation</strong> that looks very good lol</p></li>
+</ul>
+</section>
+</section>
+<section id="dataset">
+<h2>Dataset<a class="headerlink" href="#dataset" title="Link to this heading">#</a></h2>
+<p>The BBBC021 dataset consists of:</p>
+<ul class="simple">
+<li><p>103 distinct compounds with known mechanisms of action</p></li>
+<li><p>Multiple concentrations per compound (typically 8 concentrations)</p></li>
+<li><p>4 replicate images per treatment condition</p></li>
+<li><p>3-channel fluorescence images (1024×1280 pixels)</p></li>
+<li><p>12 different mechanisms of action categories</p></li>
+</ul>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
+<p>To get started:</p>
+<ol class="arabic simple">
+<li><p><strong>Clone the repository:</strong></p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/lukagerlach/CompoundProfiling.git
+<span class="nb">cd</span><span class="w"> </span>CompoundProfiling
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p><strong>Set up Python environment:</strong></p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>venv
+<span class="nb">source</span><span class="w"> </span>venv/bin/activate<span class="w">  </span><span class="c1"># Linux/Mac</span>
+<span class="c1"># or</span>
+venv<span class="se">\S</span>cripts<span class="se">\a</span>ctivate<span class="w">     </span><span class="c1"># Windows</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p><strong>Install dependencies:</strong></p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p><strong>Download and preprocess the dataset:</strong></p></li>
+</ol>
+<p>If you are on RAMSES you can just use our default location for data which is <code class="docutils literal notranslate"><span class="pre">/scratch/cv-course2025/group8/bbbc021</span></code>. If not, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>data/pybbbc_loader.py
+</pre></div>
+</div>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">#</a></h2>
+<section id="training-models">
+<h3>Training Models<a class="headerlink" href="#training-models" title="Link to this heading">#</a></h3>
+<p><strong>Train vanilla SimCLR:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>training/simclr_vanilla_train.py
+</pre></div>
+</div>
+<p><strong>Train weakly-supervised SimCLR:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>training/simclr_ws_train.py
+</pre></div>
+</div>
+<p><strong>Train DINO model:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>training/wsdino_resnet_train.py
+</pre></div>
+</div>
+</section>
+<section id="feature-extraction">
+<h3>Feature Extraction<a class="headerlink" href="#feature-extraction" title="Link to this heading">#</a></h3>
+<p>Extract features using a trained model:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>evaluation/extractor.py
+</pre></div>
+</div>
+</section>
+<section id="evaluation">
+<h3>Evaluation<a class="headerlink" href="#evaluation" title="Link to this heading">#</a></h3>
+<p>Evaluate model performance:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>evaluation/evaluator.py
+</pre></div>
+</div>
+</section>
+<section id="visualization">
+<h3>Visualization<a class="headerlink" href="#visualization" title="Link to this heading">#</a></h3>
+<p>Generate t-SNE/UMAP plots:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>evaluation/visualize_embeddings.py
+</pre></div>
+</div>
+</section>
+</section>
+<section id="project-structure">
+<h2>Project Structure<a class="headerlink" href="#project-structure" title="Link to this heading">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>CompoundProfiling/
+├── data/                    # Data loading and preprocessing
+├── models/                  # Model architectures
+├── training/               # Training scripts
+├── evaluation/             # Evaluation and visualization tools
+├── experiments/            # Experimental utilities (TVN, etc.)
+├── notebooks/              # Jupyter notebooks for exploration
+└── configs/                # Configuration files
+</pre></div>
+</div>
+</section>
+<section id="results">
+<h2>Results<a class="headerlink" href="#results" title="Link to this heading">#</a></h2>
+<p>TBA</p>
+</section>
+<section id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">#</a></h2>
+<p>Core requirements:</p>
+<ul class="simple">
+<li><p>PyTorch &gt;= 1.9.0</p></li>
+<li><p>torchvision</p></li>
+<li><p>scikit-learn</p></li>
+<li><p>numpy</p></li>
+<li><p>pandas</p></li>
+<li><p>matplotlib</p></li>
+<li><p>tqdm</p></li>
+<li><p>pybbbc (for dataset access)</p></li>
+</ul>
+<p>See <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> for complete dependency list.</p>
+</section>
+<section id="license">
+<h2>License<a class="headerlink" href="#license" title="Link to this heading">#</a></h2>
+<p>This project is licensed under the MIT License - see the <a class="reference internal" href="#LICENSE"><span class="xref myst">LICENSE</span></a> file for details.</p>
+</section>
+<section id="useful-links">
+<h2>Useful Links<a class="headerlink" href="#useful-links" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://bbbc.broadinstitute.org/BBBC021">BBBC021 Dataset</a> - Original dataset homepage</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/pybbbc/">pybbbc Documentation</a> - Python package for BBBC021 access</p></li>
+<li><p><a class="reference external" href="https://arxiv.org/abs/2002.05709">SimCLR: A Simple Framework for Contrastive Learning</a> - Original SimCLR paper</p></li>
+<li><p><a class="reference external" href="https://arxiv.org/abs/2209.07819">Self-Supervised Learning of Phenotypic Representations from Cell Images with Weak Labels</a> - WS-DINO method</p></li>
+<li><p><a class="reference external" href="https://github.com/lukagerlach/CompoundProfiling">GitHub Repository</a> - Source code</p></li>
+<li><p><a class="reference external" href="https://lukagerlach.github.io/CompoundProfiling/">Project Documentation</a> - Detailed docs</p></li>
 </ul>
 </section>
 <section id="contents">
@@ -426,22 +599,10 @@ document.write(`
 <div class="toctree-wrapper compound">
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="readme.html">CompoundProfiling</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="readme.html#setup">Setup</a></li>
-<li class="toctree-l2"><a class="reference internal" href="readme.html#usage">Usage</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#requirements">Requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#setup">Setup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#verify-installation">Verify Installation</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#dataset-preparation">Dataset Preparation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#training-a-model">Training a Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#configuration">Configuration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#example-usage">Example Usage</a></li>
 </ul>
 </li>
 </ul>
@@ -450,10 +611,11 @@ document.write(`
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="api/index.html">API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="api/models.html">Models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/data.html">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html">Models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/training.html">Training</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/evaluation.html">Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/experiments.html">Experiments</a></li>
 </ul>
 </li>
 </ul>
@@ -463,8 +625,6 @@ document.write(`
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="experiments.html">Experiments</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="experiments.html#baseline-results">Baseline Results</a></li>
-<li class="toctree-l2"><a class="reference internal" href="experiments.html#hyperparameter-analysis">Hyperparameter Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="experiments.html#compute-vs-accuracy-trade-offs">Compute vs Accuracy Trade-offs</a></li>
 </ul>
 </li>
 </ul>
@@ -499,11 +659,11 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="right-next"
-       href="readme.html"
+       href="installation.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">CompoundProfiling</p>
+        <p class="prev-next-title">Installation</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -523,7 +683,25 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#approaches">Approaches</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#key-features">Key Features</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dataset">Dataset</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#usage">Usage</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#training-models">Training Models</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#feature-extraction">Feature Extraction</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation">Evaluation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visualization">Visualization</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#project-structure">Project Structure</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#results">Results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dependencies">Dependencies</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#license">License</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#useful-links">Useful Links</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contents">Contents</a><ul class="nav section-nav flex-column">
 </ul>
 </li>

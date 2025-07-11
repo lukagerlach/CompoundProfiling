@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Data &#8212; Compound Profiling</title>
+    <title>Experiments &#8212; Compound Profiling</title>
   
   
   
@@ -40,11 +40,11 @@
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/data';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/experiments';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Models" href="models.html" />
-    <link rel="prev" title="API Reference" href="index.html" />
+    <link rel="next" title="Experiments" href="../experiments.html" />
+    <link rel="prev" title="Evaluation" href="evaluation.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -163,11 +163,11 @@
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="training.html">Training</a></li>
 <li class="toctree-l2"><a class="reference internal" href="evaluation.html">Evaluation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="experiments.html">Experiments</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Experiments</a></li>
 </ul>
 </details></li>
 </ul>
@@ -250,7 +250,7 @@
       
       
       
-      <li><a href="https://github.com/lukagerlach/CompoundProfiling/edit/main/docs/source/api/data.md" target="_blank"
+      <li><a href="https://github.com/lukagerlach/CompoundProfiling/edit/main/docs/source/api/experiments.md" target="_blank"
    class="btn btn-sm btn-source-edit-button dropdown-item"
    title="Suggest edit"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -267,7 +267,7 @@
       
       
       
-      <li><a href="https://github.com/lukagerlach/CompoundProfiling/issues/new?title=Issue%20on%20page%20%2Fapi/data.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/lukagerlach/CompoundProfiling/issues/new?title=Issue%20on%20page%20%2Fapi/experiments.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -297,7 +297,7 @@
       
       
       
-      <li><a href="../_sources/api/data.md" target="_blank"
+      <li><a href="../_sources/api/experiments.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -381,7 +381,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Data</h1>
+    <h1>Experiments</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -391,9 +391,14 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-data.pybbbc_loader">BBBC021 Loader</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#data.pybbbc_loader.download_bbbc021"><code class="docutils literal notranslate"><span class="pre">download_bbbc021()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#data.pybbbc_loader.preprocess_bbbc021"><code class="docutils literal notranslate"><span class="pre">preprocess_bbbc021()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-experiments.tvn">Typical Variation Normalizer</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#experiments.tvn.TypicalVariationNormalizer"><code class="docutils literal notranslate"><span class="pre">TypicalVariationNormalizer</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#experiments.tvn.TypicalVariationNormalizer.__init__"><code class="docutils literal notranslate"><span class="pre">TypicalVariationNormalizer.__init__()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#experiments.tvn.TypicalVariationNormalizer.fit"><code class="docutils literal notranslate"><span class="pre">TypicalVariationNormalizer.fit()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#experiments.tvn.TypicalVariationNormalizer.transform"><code class="docutils literal notranslate"><span class="pre">TypicalVariationNormalizer.transform()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#experiments.tvn.TypicalVariationNormalizer.fit_transform"><code class="docutils literal notranslate"><span class="pre">TypicalVariationNormalizer.fit_transform()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -407,67 +412,36 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="data">
-<h1>Data<a class="headerlink" href="#data" title="Link to this heading">#</a></h1>
-<section id="module-data.pybbbc_loader">
-<span id="bbbc021-loader"></span><h2>BBBC021 Loader<a class="headerlink" href="#module-data.pybbbc_loader" title="Link to this heading">#</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="data.pybbbc_loader.download_bbbc021">
-<span class="sig-prename descclassname"><span class="pre">data.pybbbc_loader.</span></span><span class="sig-name descname"><span class="pre">download_bbbc021</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'/scratch/cv-course2025/group8'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/data/pybbbc_loader.html#download_bbbc021"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data.pybbbc_loader.download_bbbc021" title="Link to this definition">#</a></dt>
-<dd><p>Downloads the complete BBBC021 dataset.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>data_root</strong> – Root directory where the dataset will be stored.</p>
-</dd>
-</dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>We are using the pybbbc library to download the dataset. This
-function is simply a wrapper around the <cite>BBBC021.download</cite>
-method.</p>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If you  are using RAMSES, you can use the default path,
-the data should be there already.</p>
-</div>
-<dl>
-<dt>Dataset Structure:</dt><dd><p>After download, the directory structure should look like:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>data_root/raw/
-├── images/
-│   ├── Week1_22123/
-│   ├── Week1_22141/
-│   ├── Week1_22161/
-│   └── ... (all experimental weeks)
-└── some_metadata_file.csv
-</pre></div>
-</div>
-</dd>
-</dl>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Download to default location</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">download_bbbc021</span><span class="p">()</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Download to custom location</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">download_bbbc021</span><span class="p">(</span><span class="s2">&quot;/path/to/my/data/bbbc021&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p class="rubric">References</p>
-<p>Dataset: <a class="reference external" href="https://bbbc.broadinstitute.org/BBBC021">https://bbbc.broadinstitute.org/BBBC021</a>
-pybbbc docs: <a class="github reference external" href="https://github.com/giacomodeodato/pybbbc">giacomodeodato/pybbbc</a></p>
+  <section id="module-experiments">
+<span id="experiments"></span><h1>Experiments<a class="headerlink" href="#module-experiments" title="Link to this heading">#</a></h1>
+<section id="module-experiments.tvn">
+<span id="typical-variation-normalizer"></span><h2>Typical Variation Normalizer<a class="headerlink" href="#module-experiments.tvn" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="experiments.tvn.TypicalVariationNormalizer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experiments.tvn.</span></span><span class="sig-name descname"><span class="pre">TypicalVariationNormalizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-08</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/experiments/tvn.html#TypicalVariationNormalizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#experiments.tvn.TypicalVariationNormalizer" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="experiments.tvn.TypicalVariationNormalizer.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-08</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/experiments/tvn.html#TypicalVariationNormalizer.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#experiments.tvn.TypicalVariationNormalizer.__init__" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experiments.tvn.TypicalVariationNormalizer.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dmso_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.7)"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/experiments/tvn.html#TypicalVariationNormalizer.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#experiments.tvn.TypicalVariationNormalizer.fit" title="Link to this definition">#</a></dt>
+<dd><p>Fit PCA to the DMSO (negative control) embeddings.</p>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="data.pybbbc_loader.preprocess_bbbc021">
-<span class="sig-prename descclassname"><span class="pre">data.pybbbc_loader.</span></span><span class="sig-name descname"><span class="pre">preprocess_bbbc021</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'/scratch/cv-course2025/group8'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/data/pybbbc_loader.html#preprocess_bbbc021"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data.pybbbc_loader.preprocess_bbbc021" title="Link to this definition">#</a></dt>
-<dd><p>Preprocess the BBBC021 dataset. More information on the preprocessing
-can be found in the pybbbc documentation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>data_root</strong> – Root directory where the raw dataset is stored.</p>
-</dd>
-</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="experiments.tvn.TypicalVariationNormalizer.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.7)"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.7)"><span class="pre">Tensor</span></a></span></span><a class="reference internal" href="../_modules/experiments/tvn.html#TypicalVariationNormalizer.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#experiments.tvn.TypicalVariationNormalizer.transform" title="Link to this definition">#</a></dt>
+<dd><p>Apply the TVN transform to the given features.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="experiments.tvn.TypicalVariationNormalizer.fit_transform">
+<span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dmso_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.7)"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.7)"><span class="pre">Tensor</span></a></span></span><a class="reference internal" href="../_modules/experiments/tvn.html#TypicalVariationNormalizer.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#experiments.tvn.TypicalVariationNormalizer.fit_transform" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </section>
@@ -485,20 +459,20 @@ can be found in the pybbbc documentation.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="index.html"
+       href="evaluation.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">API Reference</p>
+        <p class="prev-next-title">Evaluation</p>
       </div>
     </a>
     <a class="right-next"
-       href="models.html"
+       href="../experiments.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Models</p>
+        <p class="prev-next-title">Experiments</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -518,9 +492,14 @@ can be found in the pybbbc documentation.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-data.pybbbc_loader">BBBC021 Loader</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#data.pybbbc_loader.download_bbbc021"><code class="docutils literal notranslate"><span class="pre">download_bbbc021()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#data.pybbbc_loader.preprocess_bbbc021"><code class="docutils literal notranslate"><span class="pre">preprocess_bbbc021()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-experiments.tvn">Typical Variation Normalizer</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#experiments.tvn.TypicalVariationNormalizer"><code class="docutils literal notranslate"><span class="pre">TypicalVariationNormalizer</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#experiments.tvn.TypicalVariationNormalizer.__init__"><code class="docutils literal notranslate"><span class="pre">TypicalVariationNormalizer.__init__()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#experiments.tvn.TypicalVariationNormalizer.fit"><code class="docutils literal notranslate"><span class="pre">TypicalVariationNormalizer.fit()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#experiments.tvn.TypicalVariationNormalizer.transform"><code class="docutils literal notranslate"><span class="pre">TypicalVariationNormalizer.transform()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#experiments.tvn.TypicalVariationNormalizer.fit_transform"><code class="docutils literal notranslate"><span class="pre">TypicalVariationNormalizer.fit_transform()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

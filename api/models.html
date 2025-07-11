@@ -43,8 +43,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/models';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Data" href="data.html" />
-    <link rel="prev" title="API Reference" href="index.html" />
+    <link rel="next" title="Training" href="training.html" />
+    <link rel="prev" title="Data" href="data.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -152,23 +152,22 @@
         <ul class="nav bd-sidenav bd-sidenav__home-link">
             <li class="toctree-l1">
                 <a class="reference internal" href="../index.html">
-                    Compound Profiling Documentation
+                    CompoundProfiling
                 </a>
             </li>
         </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../readme.html">CompoundProfiling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data.html">Data</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="training.html">Training</a></li>
 <li class="toctree-l2"><a class="reference internal" href="evaluation.html">Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experiments.html">Experiments</a></li>
 </ul>
 </details></li>
 </ul>
@@ -392,9 +391,65 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#backbones">Backbones</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simclr">SimCLR</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ws-dino">WS-DINO</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-models.load_model">Model Loading</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.load_model.load_pretrained_model"><code class="docutils literal notranslate"><span class="pre">load_pretrained_model()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.load_model.load_pretrained_resnet50"><code class="docutils literal notranslate"><span class="pre">load_pretrained_resnet50()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.load_model.load_pretrained_model_from_weights"><code class="docutils literal notranslate"><span class="pre">load_pretrained_model_from_weights()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.load_model.create_feature_extractor"><code class="docutils literal notranslate"><span class="pre">create_feature_extractor()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-models.simclr_vanilla">SimCLR Vanilla</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_vanilla.SimCLRProjectionHead"><code class="docutils literal notranslate"><span class="pre">SimCLRProjectionHead</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_vanilla.SimCLRProjectionHead.__init__"><code class="docutils literal notranslate"><span class="pre">SimCLRProjectionHead.__init__()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_vanilla.SimCLRProjectionHead.forward"><code class="docutils literal notranslate"><span class="pre">SimCLRProjectionHead.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_vanilla.SimCLRModel"><code class="docutils literal notranslate"><span class="pre">SimCLRModel</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_vanilla.SimCLRModel.__init__"><code class="docutils literal notranslate"><span class="pre">SimCLRModel.__init__()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_vanilla.SimCLRModel.forward"><code class="docutils literal notranslate"><span class="pre">SimCLRModel.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_vanilla.SimCLRVanillaDataset"><code class="docutils literal notranslate"><span class="pre">SimCLRVanillaDataset</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_vanilla.SimCLRVanillaDataset.__init__"><code class="docutils literal notranslate"><span class="pre">SimCLRVanillaDataset.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_vanilla.contrastive_loss_vanilla"><code class="docutils literal notranslate"><span class="pre">contrastive_loss_vanilla()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_vanilla.contrastive_loss_vanilla_compound_aware"><code class="docutils literal notranslate"><span class="pre">contrastive_loss_vanilla_compound_aware()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-models.simclr_ws">SimCLR Weakly-Supervised</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_ws.SimCLRProjectionHead"><code class="docutils literal notranslate"><span class="pre">SimCLRProjectionHead</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_ws.SimCLRProjectionHead.__init__"><code class="docutils literal notranslate"><span class="pre">SimCLRProjectionHead.__init__()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_ws.SimCLRProjectionHead.forward"><code class="docutils literal notranslate"><span class="pre">SimCLRProjectionHead.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_ws.SimCLRModel"><code class="docutils literal notranslate"><span class="pre">SimCLRModel</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_ws.SimCLRModel.__init__"><code class="docutils literal notranslate"><span class="pre">SimCLRModel.__init__()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_ws.SimCLRModel.forward"><code class="docutils literal notranslate"><span class="pre">SimCLRModel.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_ws.SimCLRDataset"><code class="docutils literal notranslate"><span class="pre">SimCLRDataset</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_ws.SimCLRDataset.__init__"><code class="docutils literal notranslate"><span class="pre">SimCLRDataset.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_ws.contrastive_loss"><code class="docutils literal notranslate"><span class="pre">contrastive_loss()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_ws.LARS"><code class="docutils literal notranslate"><span class="pre">LARS</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_ws.LARS.__init__"><code class="docutils literal notranslate"><span class="pre">LARS.__init__()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_ws.LARS.step"><code class="docutils literal notranslate"><span class="pre">LARS.step()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-models.wsdino_resnet">WS-DINO ResNet</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.BBBC021WeakLabelDataset"><code class="docutils literal notranslate"><span class="pre">BBBC021WeakLabelDataset</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.BBBC021WeakLabelDataset.__init__"><code class="docutils literal notranslate"><span class="pre">BBBC021WeakLabelDataset.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.get_resnet50"><code class="docutils literal notranslate"><span class="pre">get_resnet50()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.dino_loss"><code class="docutils literal notranslate"><span class="pre">dino_loss()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.update_teacher"><code class="docutils literal notranslate"><span class="pre">update_teacher()</span></code></a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -409,14 +464,376 @@ document.write(`
   <section id="module-models">
 <span id="models"></span><h1>Models<a class="headerlink" href="#module-models" title="Link to this heading">#</a></h1>
 <p>Models module for compound profiling.</p>
-<section id="backbones">
-<h2>Backbones<a class="headerlink" href="#backbones" title="Link to this heading">#</a></h2>
+<section id="module-models.load_model">
+<span id="model-loading"></span><h2>Model Loading<a class="headerlink" href="#module-models.load_model" title="Link to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="models.load_model.load_pretrained_model">
+<span class="sig-prename descclassname"><span class="pre">models.load_model.</span></span><span class="sig-name descname"><span class="pre">load_pretrained_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.13)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'base_resnet'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'simclr'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'wsdino'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/scratch/cv-course2025/group8/model_weights'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/load_model.html#load_pretrained_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.load_model.load_pretrained_model" title="Link to this definition">#</a></dt>
+<dd><p>Load pretrained ResNet50 model.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="models.load_model.load_pretrained_resnet50">
+<span class="sig-prename descclassname"><span class="pre">models.load_model.</span></span><span class="sig-name descname"><span class="pre">load_pretrained_resnet50</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'IMAGENET1K_V2'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><span class="pre">object</span></a></span></span><a class="reference internal" href="../_modules/models/load_model.html#load_pretrained_resnet50"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.load_model.load_pretrained_resnet50" title="Link to this definition">#</a></dt>
+<dd><p>Load pretrained ResNet50 model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>weights</strong> – Model weights to use</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>See <a class="reference external" href="https://docs.pytorch.org/vision/main/models/generated/torchvision.models.resnet50.html#torchvision.models.ResNet50_Weights">https://docs.pytorch.org/vision/main/models/generated/torchvision.models.resnet50.html#torchvision.models.ResNet50_Weights</a>
+for available weights.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="models.load_model.load_pretrained_model_from_weights">
+<span class="sig-prename descclassname"><span class="pre">models.load_model.</span></span><span class="sig-name descname"><span class="pre">load_pretrained_model_from_weights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.7)"><span class="pre">Module</span></a></span></span><a class="reference internal" href="../_modules/models/load_model.html#load_pretrained_model_from_weights"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.load_model.load_pretrained_model_from_weights" title="Link to this definition">#</a></dt>
+<dd><p>Load pretrained ResNet50 model from custom weights.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_name</strong> – Name of the model to load</p></li>
+<li><p><strong>weight_path</strong> – Path to the weights file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Pretrained ResNet50 model</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>nn.Module</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="models.load_model.create_feature_extractor">
+<span class="sig-prename descclassname"><span class="pre">models.load_model.</span></span><span class="sig-name descname"><span class="pre">create_feature_extractor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pretrained_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.7)"><span class="pre">Module</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.7)"><span class="pre">Module</span></a></span></span><a class="reference internal" href="../_modules/models/load_model.html#create_feature_extractor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.load_model.create_feature_extractor" title="Link to this definition">#</a></dt>
+<dd><p>Create a feature extractor from a pretrained ResNet50 model.
+:param pretrained_model: Pretrained ResNet50 model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Feature extractor model without the final classification layer</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>nn.Module</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="simclr">
-<h2>SimCLR<a class="headerlink" href="#simclr" title="Link to this heading">#</a></h2>
+<section id="module-models.simclr_vanilla">
+<span id="simclr-vanilla"></span><h2>SimCLR Vanilla<a class="headerlink" href="#module-models.simclr_vanilla" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="models.simclr_vanilla.SimCLRProjectionHead">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.simclr_vanilla.</span></span><span class="sig-name descname"><span class="pre">SimCLRProjectionHead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">512</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/simclr_vanilla.html#SimCLRProjectionHead"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.simclr_vanilla.SimCLRProjectionHead" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a></p>
+<p>Projection head for SimCLR</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="models.simclr_vanilla.SimCLRProjectionHead.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">512</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/simclr_vanilla.html#SimCLRProjectionHead.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.simclr_vanilla.SimCLRProjectionHead.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.simclr_vanilla.SimCLRProjectionHead.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/simclr_vanilla.html#SimCLRProjectionHead.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.simclr_vanilla.SimCLRProjectionHead.forward" title="Link to this definition">#</a></dt>
+<dd><p>Define the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="models.simclr_vanilla.SimCLRModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.simclr_vanilla.</span></span><span class="sig-name descname"><span class="pre">SimCLRModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backbone_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/simclr_vanilla.html#SimCLRModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.simclr_vanilla.SimCLRModel" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a></p>
+<p>This is our model for vanilla SimCLR,
+with ResNet50 backbone.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="models.simclr_vanilla.SimCLRModel.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backbone_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/simclr_vanilla.html#SimCLRModel.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.simclr_vanilla.SimCLRModel.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.simclr_vanilla.SimCLRModel.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/simclr_vanilla.html#SimCLRModel.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.simclr_vanilla.SimCLRModel.forward" title="Link to this definition">#</a></dt>
+<dd><p>Define the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="models.simclr_vanilla.SimCLRVanillaDataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.simclr_vanilla.</span></span><span class="sig-name descname"><span class="pre">SimCLRVanillaDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compound_aware</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/simclr_vanilla.html#SimCLRVanillaDataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.simclr_vanilla.SimCLRVanillaDataset" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.pytorch.org/docs/stable/data.html#torch.utils.data.Dataset" title="(in PyTorch v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a></p>
+<p>Dataset for (vanilla) SimCLR: returns two augmentations of the same image.
+Optionally returns compound labels for compound-aware training.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="models.simclr_vanilla.SimCLRVanillaDataset.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compound_aware</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/simclr_vanilla.html#SimCLRVanillaDataset.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.simclr_vanilla.SimCLRVanillaDataset.__init__" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="models.simclr_vanilla.contrastive_loss_vanilla">
+<span class="sig-prename descclassname"><span class="pre">models.simclr_vanilla.</span></span><span class="sig-name descname"><span class="pre">contrastive_loss_vanilla</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/simclr_vanilla.html#contrastive_loss_vanilla"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.simclr_vanilla.contrastive_loss_vanilla" title="Link to this definition">#</a></dt>
+<dd><p>Standard SimCLR NT-Xent loss for vanilla training.
+No labels needed - positive pairs are augmentations of the same image.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="models.simclr_vanilla.contrastive_loss_vanilla_compound_aware">
+<span class="sig-prename descclassname"><span class="pre">models.simclr_vanilla.</span></span><span class="sig-name descname"><span class="pre">contrastive_loss_vanilla_compound_aware</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compound_labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/simclr_vanilla.html#contrastive_loss_vanilla_compound_aware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.simclr_vanilla.contrastive_loss_vanilla_compound_aware" title="Link to this definition">#</a></dt>
+<dd><p>Compound-aware SimCLR NT-Xent loss for vanilla training.
+Excludes same-compound pairs from being treated as negatives.
+This is my go at a less agressive WS version compared to the
+simclr_ws.py version as i couldn’t believe our Labels would
+not help at all :D.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z1</strong> – Projected features from positive pairs (augmentations of same image).</p></li>
+<li><p><strong>z2</strong> – Projected features from positive pairs (augmentations of same image).</p></li>
+<li><p><strong>compound_labels</strong> – Compound labels for each image in the batch.</p></li>
+<li><p><strong>temperature</strong> – Temperature parameter for softmax.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="ws-dino">
-<h2>WS-DINO<a class="headerlink" href="#ws-dino" title="Link to this heading">#</a></h2>
+<section id="module-models.simclr_ws">
+<span id="simclr-weakly-supervised"></span><h2>SimCLR Weakly-Supervised<a class="headerlink" href="#module-models.simclr_ws" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="models.simclr_ws.SimCLRProjectionHead">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.simclr_ws.</span></span><span class="sig-name descname"><span class="pre">SimCLRProjectionHead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">512</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">256</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/simclr_ws.html#SimCLRProjectionHead"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.simclr_ws.SimCLRProjectionHead" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a></p>
+<p>Projection head for SimCLR</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="models.simclr_ws.SimCLRProjectionHead.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">512</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">256</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/simclr_ws.html#SimCLRProjectionHead.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.simclr_ws.SimCLRProjectionHead.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.simclr_ws.SimCLRProjectionHead.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/simclr_ws.html#SimCLRProjectionHead.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.simclr_ws.SimCLRProjectionHead.forward" title="Link to this definition">#</a></dt>
+<dd><p>Define the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="models.simclr_ws.SimCLRModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.simclr_ws.</span></span><span class="sig-name descname"><span class="pre">SimCLRModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backbone_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">256</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/simclr_ws.html#SimCLRModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.simclr_ws.SimCLRModel" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a></p>
+<p>This is our approach to WS-SimCLR where we use
+weak labels to compose positive pairs. In particular,
+we used the compound labels to create positive pairs,
+where each pair consists of two images from the same
+compound but from different wells or plates (to bring
+in some noise and prevent the model from learning
+plate/well specific features).All negative pairs are
+images from different compounds.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="models.simclr_ws.SimCLRModel.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backbone_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">256</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/simclr_ws.html#SimCLRModel.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.simclr_ws.SimCLRModel.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.simclr_ws.SimCLRModel.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/simclr_ws.html#SimCLRModel.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.simclr_ws.SimCLRModel.forward" title="Link to this definition">#</a></dt>
+<dd><p>Define the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="models.simclr_ws.SimCLRDataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.simclr_ws.</span></span><span class="sig-name descname"><span class="pre">SimCLRDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/simclr_ws.html#SimCLRDataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.simclr_ws.SimCLRDataset" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.pytorch.org/docs/stable/data.html#torch.utils.data.Dataset" title="(in PyTorch v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a></p>
+<p>Dataset for SimCLR training with compound-based positive pairs</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="models.simclr_ws.SimCLRDataset.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/simclr_ws.html#SimCLRDataset.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.simclr_ws.SimCLRDataset.__init__" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="models.simclr_ws.contrastive_loss">
+<span class="sig-prename descclassname"><span class="pre">models.simclr_ws.</span></span><span class="sig-name descname"><span class="pre">contrastive_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/simclr_ws.html#contrastive_loss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.simclr_ws.contrastive_loss" title="Link to this definition">#</a></dt>
+<dd><p>This was our go at the NT-Xent loss function, which is the
+contrastive loss used in SimCLR. It computes the loss
+based on the similarity of projected features from positive pairs.
+We made a small change to the loss function so that images in the
+same compound are ingored as negatives, so the mdoel would not try
+to seperate them  in the feature space. Positive pairs are
+images from the same compound, but from different wells/plates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z1</strong> – Projected features from positive pairs.</p></li>
+<li><p><strong>z2</strong> – Projected features from positive pairs.</p></li>
+<li><p><strong>labels</strong> – Compound labels for each pair in the batch.</p></li>
+<li><p><strong>temperature</strong> – Temperature parameter for softmax.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="models.simclr_ws.LARS">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.simclr_ws.</span></span><span class="sig-name descname"><span class="pre">LARS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">momentum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_decay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/simclr_ws.html#LARS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.simclr_ws.LARS" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.pytorch.org/docs/stable/optim.html#torch.optim.Optimizer" title="(in PyTorch v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Optimizer</span></code></a></p>
+<p>LARS optimizer implementation. Although this
+Optimizer is designed for large batch sizes,
+we still wanted to implement this since it
+is the optimizer used in the original
+SimCLR paper.</p>
+<p>However, given our computational resources,
+we will use AdamW instead, which is more
+suitable for our setup.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="models.simclr_ws.LARS.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">momentum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_decay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/simclr_ws.html#LARS.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.simclr_ws.LARS.__init__" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.simclr_ws.LARS.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">closure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/simclr_ws.html#LARS.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.simclr_ws.LARS.step" title="Link to this definition">#</a></dt>
+<dd><p>Perform a single optimization step to update parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>closure</strong> (<em>Callable</em>) – A closure that reevaluates the model and
+returns the loss. Optional for most optimizers.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-models.wsdino_resnet">
+<span id="ws-dino-resnet"></span><h2>WS-DINO ResNet<a class="headerlink" href="#module-models.wsdino_resnet" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="models.wsdino_resnet.BBBC021WeakLabelDataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.wsdino_resnet.</span></span><span class="sig-name descname"><span class="pre">BBBC021WeakLabelDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bbbc021</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/wsdino_resnet.html#BBBC021WeakLabelDataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.wsdino_resnet.BBBC021WeakLabelDataset" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.pytorch.org/docs/stable/data.html#torch.utils.data.Dataset" title="(in PyTorch v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></a></p>
+<p>PyTorch-compatible dataset wrapper for BBBC021 using weak labels (compound IDs).</p>
+<dl class="simple">
+<dt>Each sample consists of:</dt><dd><ul class="simple">
+<li><p>An image tensor (optionally transformed)</p></li>
+<li><p>A weak label: the compound ID (as an index)</p></li>
+</ul>
+</dd>
+</dl>
+<p>Filters out samples with unknown MoA (‘null’).</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="models.wsdino_resnet.BBBC021WeakLabelDataset.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bbbc021</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/wsdino_resnet.html#BBBC021WeakLabelDataset.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.wsdino_resnet.BBBC021WeakLabelDataset.__init__" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bbbc021</strong> – An instance of pybbbc.BBBC021</p></li>
+<li><p><strong>transform</strong> – A torchvision transform to apply to each image</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="models.wsdino_resnet.get_resnet50">
+<span class="sig-prename descclassname"><span class="pre">models.wsdino_resnet.</span></span><span class="sig-name descname"><span class="pre">get_resnet50</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_classes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'base_resnet'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/wsdino_resnet.html#get_resnet50"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.wsdino_resnet.get_resnet50" title="Link to this definition">#</a></dt>
+<dd><p>Loads a ResNet-50 backbone with the final layer replaced for classification.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_classes</strong> – Number of output classes (e.g., number of unique MoAs)</p></li>
+<li><p><strong>model_type</strong> – should be “base_resnet” or “wsdino”</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A torch.nn.Module (ResNet-50 with custom head)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="models.wsdino_resnet.dino_loss">
+<span class="sig-prename descclassname"><span class="pre">models.wsdino_resnet.</span></span><span class="sig-name descname"><span class="pre">dino_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">student_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">teacher_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.07</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/wsdino_resnet.html#dino_loss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.wsdino_resnet.dino_loss" title="Link to this definition">#</a></dt>
+<dd><p>Computes the DINO distillation loss between student and teacher outputs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>student_out</strong> – Logits from the student network</p></li>
+<li><p><strong>teacher_out</strong> – Logits from the teacher network (detached)</p></li>
+<li><p><strong>temp</strong> – Temperature scaling parameter</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>KL divergence loss between student and teacher probability distributions</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="models.wsdino_resnet.update_teacher">
+<span class="sig-prename descclassname"><span class="pre">models.wsdino_resnet.</span></span><span class="sig-name descname"><span class="pre">update_teacher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">student</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">teacher</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.996</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/wsdino_resnet.html#update_teacher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.wsdino_resnet.update_teacher" title="Link to this definition">#</a></dt>
+<dd><p>Updates teacher weights using exponential moving average of student weights.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>student</strong> – Student model (nn.Module)</p></li>
+<li><p><strong>teacher</strong> – Teacher model (nn.Module)</p></li>
+<li><p><strong>m</strong> – Momentum factor (closer to 1 = slower update)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None (teacher model is updated in place)</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 
@@ -432,20 +849,20 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="index.html"
+       href="data.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">API Reference</p>
+        <p class="prev-next-title">Data</p>
       </div>
     </a>
     <a class="right-next"
-       href="data.html"
+       href="training.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Data</p>
+        <p class="prev-next-title">Training</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -465,9 +882,65 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#backbones">Backbones</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simclr">SimCLR</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ws-dino">WS-DINO</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-models.load_model">Model Loading</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.load_model.load_pretrained_model"><code class="docutils literal notranslate"><span class="pre">load_pretrained_model()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.load_model.load_pretrained_resnet50"><code class="docutils literal notranslate"><span class="pre">load_pretrained_resnet50()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.load_model.load_pretrained_model_from_weights"><code class="docutils literal notranslate"><span class="pre">load_pretrained_model_from_weights()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.load_model.create_feature_extractor"><code class="docutils literal notranslate"><span class="pre">create_feature_extractor()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-models.simclr_vanilla">SimCLR Vanilla</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_vanilla.SimCLRProjectionHead"><code class="docutils literal notranslate"><span class="pre">SimCLRProjectionHead</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_vanilla.SimCLRProjectionHead.__init__"><code class="docutils literal notranslate"><span class="pre">SimCLRProjectionHead.__init__()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_vanilla.SimCLRProjectionHead.forward"><code class="docutils literal notranslate"><span class="pre">SimCLRProjectionHead.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_vanilla.SimCLRModel"><code class="docutils literal notranslate"><span class="pre">SimCLRModel</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_vanilla.SimCLRModel.__init__"><code class="docutils literal notranslate"><span class="pre">SimCLRModel.__init__()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_vanilla.SimCLRModel.forward"><code class="docutils literal notranslate"><span class="pre">SimCLRModel.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_vanilla.SimCLRVanillaDataset"><code class="docutils literal notranslate"><span class="pre">SimCLRVanillaDataset</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_vanilla.SimCLRVanillaDataset.__init__"><code class="docutils literal notranslate"><span class="pre">SimCLRVanillaDataset.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_vanilla.contrastive_loss_vanilla"><code class="docutils literal notranslate"><span class="pre">contrastive_loss_vanilla()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_vanilla.contrastive_loss_vanilla_compound_aware"><code class="docutils literal notranslate"><span class="pre">contrastive_loss_vanilla_compound_aware()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-models.simclr_ws">SimCLR Weakly-Supervised</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_ws.SimCLRProjectionHead"><code class="docutils literal notranslate"><span class="pre">SimCLRProjectionHead</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_ws.SimCLRProjectionHead.__init__"><code class="docutils literal notranslate"><span class="pre">SimCLRProjectionHead.__init__()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_ws.SimCLRProjectionHead.forward"><code class="docutils literal notranslate"><span class="pre">SimCLRProjectionHead.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_ws.SimCLRModel"><code class="docutils literal notranslate"><span class="pre">SimCLRModel</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_ws.SimCLRModel.__init__"><code class="docutils literal notranslate"><span class="pre">SimCLRModel.__init__()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_ws.SimCLRModel.forward"><code class="docutils literal notranslate"><span class="pre">SimCLRModel.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_ws.SimCLRDataset"><code class="docutils literal notranslate"><span class="pre">SimCLRDataset</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_ws.SimCLRDataset.__init__"><code class="docutils literal notranslate"><span class="pre">SimCLRDataset.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_ws.contrastive_loss"><code class="docutils literal notranslate"><span class="pre">contrastive_loss()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_ws.LARS"><code class="docutils literal notranslate"><span class="pre">LARS</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_ws.LARS.__init__"><code class="docutils literal notranslate"><span class="pre">LARS.__init__()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.simclr_ws.LARS.step"><code class="docutils literal notranslate"><span class="pre">LARS.step()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-models.wsdino_resnet">WS-DINO ResNet</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.BBBC021WeakLabelDataset"><code class="docutils literal notranslate"><span class="pre">BBBC021WeakLabelDataset</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.BBBC021WeakLabelDataset.__init__"><code class="docutils literal notranslate"><span class="pre">BBBC021WeakLabelDataset.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.get_resnet50"><code class="docutils literal notranslate"><span class="pre">get_resnet50()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.dino_loss"><code class="docutils literal notranslate"><span class="pre">dino_loss()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.update_teacher"><code class="docutils literal notranslate"><span class="pre">update_teacher()</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

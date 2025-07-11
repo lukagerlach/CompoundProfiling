@@ -43,8 +43,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/index';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Models" href="models.html" />
-    <link rel="prev" title="Quick Start" href="../quickstart.html" />
+    <link rel="next" title="Data" href="data.html" />
+    <link rel="prev" title="Installation" href="../installation.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -152,23 +152,22 @@
         <ul class="nav bd-sidenav bd-sidenav__home-link">
             <li class="toctree-l1">
                 <a class="reference internal" href="../index.html">
-                    Compound Profiling Documentation
+                    CompoundProfiling
                 </a>
             </li>
         </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../readme.html">CompoundProfiling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data.html">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="training.html">Training</a></li>
 <li class="toctree-l2"><a class="reference internal" href="evaluation.html">Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experiments.html">Experiments</a></li>
 </ul>
 </details></li>
 </ul>
@@ -398,25 +397,31 @@ document.write(`
 <h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">#</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="models.html">Models</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="models.html#backbones">Backbones</a></li>
-<li class="toctree-l2"><a class="reference internal" href="models.html#simclr">SimCLR</a></li>
-<li class="toctree-l2"><a class="reference internal" href="models.html#ws-dino">WS-DINO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data.html">Data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="data.html#module-data.pybbbc_loader">BBBC021 Loader</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="data.html">Data</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="data.html#datasets">Datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data.html#transformations">Transformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="models.html#module-models.load_model">Model Loading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html#module-models.simclr_vanilla">SimCLR Vanilla</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html#module-models.simclr_ws">SimCLR Weakly-Supervised</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html#module-models.wsdino_resnet">WS-DINO ResNet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="training.html">Training</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="training.html#trainers">Trainers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="training.html#losses">Losses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training.html#module-training.simclr_vanilla_train">SimCLR Vanilla Training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training.html#module-training.simclr_ws_train">SimCLR Weakly-Supervised Training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training.html#module-training.wsdino_resnet_train">WS-DINO ResNet Training</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="evaluation.html">Evaluation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="evaluation.html#metrics">Metrics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evaluation.html#visualization">Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evaluation.html#module-evaluation.evaluator">Evaluator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evaluation.html#module-evaluation.extractor">Feature Extractor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evaluation.html#module-evaluation.visualize_embeddings">Visualization</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="experiments.html">Experiments</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="experiments.html#module-experiments.tvn">Typical Variation Normalizer</a></li>
 </ul>
 </li>
 </ul>
@@ -435,20 +440,20 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../quickstart.html"
+       href="../installation.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Quick Start</p>
+        <p class="prev-next-title">Installation</p>
       </div>
     </a>
     <a class="right-next"
-       href="models.html"
+       href="data.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Models</p>
+        <p class="prev-next-title">Data</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

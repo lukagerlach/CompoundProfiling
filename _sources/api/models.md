@@ -7,28 +7,37 @@
    :show-inheritance:
 ```
 
-## Backbones
+## Model Loading
 
 ```{eval-rst}
-.. automodule:: models.backbones
+.. automodule:: models.load_model
    :members:
    :undoc-members:
    :show-inheritance:
 ```
 
-## SimCLR
+## SimCLR Vanilla
 
 ```{eval-rst}
-.. automodule:: models.simclr
+.. automodule:: models.simclr_vanilla
    :members:
    :undoc-members:
    :show-inheritance:
 ```
 
-## WS-DINO
+## SimCLR Weakly-Supervised
 
 ```{eval-rst}
-.. automodule:: models.ws_dino
+.. automodule:: models.simclr_ws
+   :members:
+   :undoc-members:
+   :show-inheritance:
+```
+
+## WS-DINO ResNet
+
+```{eval-rst}
+.. automodule:: models.wsdino_resnet
    :members:
    :undoc-members:
    :show-inheritance:

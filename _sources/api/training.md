@@ -7,19 +7,28 @@
    :show-inheritance:
 ```
 
-## Trainers
+## SimCLR Vanilla Training
 
 ```{eval-rst}
-.. automodule:: training.trainers
+.. automodule:: training.simclr_vanilla_train
    :members:
    :undoc-members:
    :show-inheritance:
 ```
 
-## Losses
+## SimCLR Weakly-Supervised Training
 
 ```{eval-rst}
-.. automodule:: training.losses
+.. automodule:: training.simclr_ws_train
+   :members:
+   :undoc-members:
+   :show-inheritance:
+```
+
+## WS-DINO ResNet Training
+
+```{eval-rst}
+.. automodule:: training.wsdino_resnet_train
    :members:
    :undoc-members:
    :show-inheritance:

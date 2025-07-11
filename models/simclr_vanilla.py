@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.data import Dataset
+import torchvision.transforms as transforms
 import numpy as np
 
 from pybbbc import BBBC021, constants
@@ -60,34 +61,45 @@ class SimCLRVanillaDataset(Dataset):
         self.transform = transform
         self.compound_aware = compound_aware
         
+        # Create a basic resize transform for memory efficiency
+        # We'll handle tensor conversion manually since images might already be tensors
+        self.resize_transform = transforms.Resize((224, 224))
+        
         moas = constants.MOA.copy()
         if "null" in moas:
             moas.remove("null")
-            
+        if "DMSO" in moas:
+            moas.remove("DMSO")  
         self.dataset = BBBC021(root_path=root_path, moa=moas)
         self.images = []
         self.compound_labels = []
+        
+        print(f"Loading and resizing {len(self.dataset)} images...")
         
         # Collect all images and optionally compound labels
         for i in range(len(self.dataset)):
             image, metadata = self.dataset[i]
             if metadata.compound.moa != 'null':
-                self.images.append(image)
+                # Convert to tensor if needed
+                if isinstance(image, np.ndarray):
+                    image = torch.from_numpy(image).float()
+                
+                # Apply resize to the tensor
+                resized_image = self.resize_transform(image)
+                self.images.append(resized_image)
+                
                 if self.compound_aware:
                     self.compound_labels.append(metadata.compound.compound)
         
         mode_str = "compound-aware" if self.compound_aware else "vanilla"
-        print(f"Loaded {len(self.images)} images for {mode_str} SimCLR training")
+        print(f"Loaded {len(self.images)} resized images for {mode_str} SimCLR training")
+        print(f"Memory usage per image: {self.images[0].element_size() * self.images[0].nelement() / 1024**2:.2f} MB")
     
     def __len__(self):
         return len(self.images)
     
     def __getitem__(self, idx):
-        image = self.images[idx]
-        
-        # Convert to tensor if needed
-        if isinstance(image, np.ndarray):
-            image = torch.from_numpy(image).float()
+        image = self.images[idx]  # Already resized and converted to tensor
         
         # Apply augmentations twice to get two views
         if self.transform:

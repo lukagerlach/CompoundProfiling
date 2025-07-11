@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 from tqdm import tqdm
 import os
+import gc
 
 from models.load_model import load_pretrained_model
 from models.simclr_vanilla import (SimCLRModel, 
@@ -49,11 +50,9 @@ def train_simclr_vanilla(
     print(f"Training {mode_str} SimCLR on device: {device}")
     
     # Strong augmentations for SimCLR
-    # As we are using the same images for both augmentations here,
-    # we need to ensure that the augmentations are strong enough
-    # to create diverse views.
+    # Note: Resize is now handled in the dataset initialization
+    # We only apply augmentations here (no resize needed)
     simclr_transform = transforms.Compose([
-        transforms.Resize((224, 224)),
         transforms.RandomResizedCrop(224, scale=(0.6, 1.0)),
         transforms.RandomHorizontalFlip(p=0.5),
         transforms.RandomVerticalFlip(p=0.5),
@@ -67,6 +66,7 @@ def train_simclr_vanilla(
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
     
+    
     # Create dataset and dataloader
     dataset = SimCLRVanillaDataset(root_path=root_path, transform=simclr_transform, compound_aware=compound_aware)
     
@@ -74,8 +74,7 @@ def train_simclr_vanilla(
         dataset, 
         batch_size=batch_size, 
         shuffle=True, 
-        num_workers=min(8, os.cpu_count()),
-        pin_memory=True,
+        num_workers=min(4, os.cpu_count()),
         drop_last=True
     )
     
@@ -207,14 +206,17 @@ def train_simclr_vanilla(
 
 if __name__ == "__main__":
     # Train vanilla SimCLR model
+    
+    gc.collect()
+    torch.cuda.empty_cache()
     model = train_simclr_vanilla(
         root_path="/scratch/cv-course2025/group8",
         epochs=200,
-        batch_size=256,
+        batch_size=512,
         learning_rate=0.0006,
         temperature=0.3,
         projection_dim=128,
         device=torch.device("cuda" if torch.cuda.is_available() else "cpu"),
-        save_every=50,
+        save_every=100,
         compound_aware=True
     )

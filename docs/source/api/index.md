@@ -3,8 +3,9 @@
 ```{toctree}
 :maxdepth: 2
 
-models
 data
+models
 training
 evaluation
+experiments
 ```

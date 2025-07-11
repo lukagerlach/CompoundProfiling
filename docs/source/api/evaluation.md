@@ -7,10 +7,19 @@
    :show-inheritance:
 ```
 
-## Metrics
+## Evaluator
 
 ```{eval-rst}
-.. automodule:: evaluation.metrics
+.. automodule:: evaluation.evaluator
+   :members:
+   :undoc-members:
+   :show-inheritance:
+```
+
+## Feature Extractor
+
+```{eval-rst}
+.. automodule:: evaluation.extractor
    :members:
    :undoc-members:
    :show-inheritance:
@@ -19,7 +28,7 @@
 ## Visualization
 
 ```{eval-rst}
-.. automodule:: evaluation.visualization
+.. automodule:: evaluation.visualize_embeddings
    :members:
    :undoc-members:
    :show-inheritance:

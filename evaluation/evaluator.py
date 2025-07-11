@@ -8,7 +8,7 @@ import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 from pybbbc import BBBC021, constants
 
-from models.resnet_50_base import load_pretrained_model, create_feature_extractor, ModelName
+from models.load_model import load_pretrained_model, create_feature_extractor, ModelName
 
 DistanceMeasure = Literal["l1", "l2", "cosine"]
 
@@ -192,20 +192,17 @@ def evaluate_model(model_name: ModelName, data: BBBC021, device, distance_measur
     return results
 
 if __name__ == "__main__":
-    # Example usage
-    os.environ['CUDA_VISIBLE_DEVICES'] = '3'
-    
-    model_name = "base_resnet"
+    model_name = "simclr"
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     # Load BBBC021 dataset
     data_root = "/scratch/cv-course2025/group8"
-    compounds = constants.COMPOUNDS
-    compounds.remove("DMSO")
-    data = BBBC021(root_path=data_root, compound=compounds)  # Load all compounds
+    moas = constants.MOA
+    moas.remove("DMSO")
+    data = BBBC021(root_path=data_root, moa=moas)  # Load all compounds
     
     # Evaluate model
-    results = evaluate_model(model_name, data, device, distance_measure="cosine", nsc_eval=True, batch_size=64)
+    results = evaluate_model(model_name, data, device, distance_measure="cosine", nsc_eval=True, batch_size=128)
     
     print("\nEvaluation completed. Results:")
     for key, value in results.items():

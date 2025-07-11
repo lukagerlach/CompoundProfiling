@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 import numpy as np
 
-from models.resnet_50_base import load_pretrained_model, create_feature_extractor, ModelName
+from models.load_model import load_pretrained_model, create_feature_extractor, ModelName
 from pybbbc import BBBC021, constants
 
 import os
@@ -50,6 +50,7 @@ def extract_moa_features(model_name: ModelName, device, batch_size = 16, data_ro
     feature_extractor = feature_extractor.to(device)
     feature_extractor.eval()
     
+    compounds.remove('DMSO')
     # Process each compound dynamically
     for compound in compounds:        
         data = BBBC021(root_path=data_root, compound=compound)  # Fixed: use single compound
@@ -126,11 +127,10 @@ def extract_moa_features(model_name: ModelName, device, batch_size = 16, data_ro
 
 # main function to run the feature extraction
 if __name__ == "__main__":
-    os.environ['CUDA_VISIBLE_DEVICES'] = '3'
     
     extract_moa_features(
-        model_name="base_resnet",
+        model_name="simclr",
         device=torch.device("cuda" if torch.cuda.is_available() else "cpu"), 
-        batch_size=32, 
+        batch_size=128, 
         data_root="/scratch/cv-course2025/group8",
         compounds=constants.COMPOUNDS)

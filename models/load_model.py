@@ -43,7 +43,6 @@ def load_pretrained_resnet50(weights: str = "IMAGENET1K_V2") -> object:
     return pretrained_model
 
 def load_pretrained_model_from_weights(model_name: str, weight_path: str) -> nn.Module:
-    # TODO: Test this after we trained models
     """Load pretrained ResNet50 model from custom weights.
     
     Args:
@@ -60,9 +59,25 @@ def load_pretrained_model_from_weights(model_name: str, weight_path: str) -> nn.
     
     # Load the weights
     try:
-        pretrained_model.load_state_dict(torch.load(f"{weight_path}/{model_name}.pth"))
+        state_dict = torch.load(f"{weight_path}/{model_name}.pth", map_location='cpu')
+        
+        # Check if this is a backbone/feature extractor state dict (missing fc layer)
+        model_keys = set(pretrained_model.state_dict().keys())
+        saved_keys = set(state_dict.keys())
+        missing_fc = any('fc.' in key for key in (model_keys - saved_keys))
+        
+        if missing_fc:
+            print("Loading backbone weights (without final classification layer)...")
+            # Load backbone weights, keep randomly initialized fc layer
+            pretrained_model.load_state_dict(state_dict, strict=False)
+        else:
+            # Standard loading for complete model
+            pretrained_model.load_state_dict(state_dict)
+            
     except FileNotFoundError:
         raise ValueError(f"Weight file '{model_name}.pth' not found in '{weight_path}'")
+    except Exception as e:
+        raise ValueError(f"Error loading weights: {e}")
     
     pretrained_model.eval()
     return pretrained_model
@@ -76,7 +91,6 @@ def create_feature_extractor(pretrained_model: nn.Module) -> nn.Module:
     """
     
     # Create feature extractor (remove final classification layer)
-    # We basically cut off the last layer to get the feature extractor
     feature_extractor = nn.Sequential(*list(pretrained_model.children())[:-1])
     feature_extractor.eval()
     return feature_extractor

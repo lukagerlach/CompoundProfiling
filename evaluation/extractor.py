@@ -46,11 +46,14 @@ def extract_moa_features(model_name: ModelName, device, batch_size = 16, data_ro
     output_dir = os.path.join(data_root, "bbbc021_features", model_name)
     os.makedirs(output_dir, exist_ok=True)
     
+    # Create DMSO subfolder
+    dmso_dir = os.path.join(output_dir, "DMSO")
+    os.makedirs(dmso_dir, exist_ok=True)
+    
     # Set device
     feature_extractor = feature_extractor.to(device)
     feature_extractor.eval()
     
-    compounds.remove('DMSO')
     # Process each compound dynamically
     for compound in compounds:        
         data = BBBC021(root_path=data_root, compound=compound)  # Fixed: use single compound
@@ -73,11 +76,9 @@ def extract_moa_features(model_name: ModelName, device, batch_size = 16, data_ro
                 image_groups[key] = []
             # Convert numpy array to tensor if needed
             if isinstance(image, np.ndarray):
-                image = torch.from_numpy(image).float()        
-            # Apply transforms (resize + normalize) - THIS IS MISSING!
+                image = torch.from_numpy(image).float()
             image = transform(image)
             image_groups[key].append(image)
-            
         
         # Process each group for this compound immediately
         for key, images in image_groups.items():
@@ -101,25 +102,32 @@ def extract_moa_features(model_name: ModelName, device, batch_size = 16, data_ro
                         batch_images = batch[0].to(device)
                         features = feature_extractor(batch_images)
                         features = features.squeeze()  # Remove spatial dimensions
+                        if len(features.shape) == 1:
+                            features = features.unsqueeze(0)
                         all_features.append(features.cpu())
                 
-                # Compute average features
                 all_features = torch.cat(all_features, dim=0)
-                avg_features = torch.mean(all_features, dim=0)
-                
-                # Create result as tuple (key, feature)
-                result = (key, avg_features)
-                
-                # Create filename: compound_concentration
-                filename = f"{compound_name}_{concentration}.pkl".replace(' ', '_').replace('/', '_')
-                filepath = os.path.join(output_dir, filename)
-                
-                # Save to file
-                with open(filepath, 'wb') as f:
-                    pickle.dump(result, f)
-                
-                print(f"Saved features to {filepath}")
-                
+
+                if compound_name == "DMSO":
+                    # Save one .pkl per image (for TVN) in DMSO subfolder
+                    for i, feature in enumerate(all_features):
+                        filename = f"{compound_name}_{concentration}_img{i}.pkl".replace(' ', '_').replace('/', '_')
+                        filepath = os.path.join(dmso_dir, filename)
+                        result = (key, feature)
+                        with open(filepath, 'wb') as f:
+                            pickle.dump(result, f)
+                    print(f"Saved {len(all_features)} per-image features for DMSO group to {dmso_dir} for TVN")
+
+                else:
+                    # Save average feature (standard)
+                    avg_features = torch.mean(all_features, dim=0)
+                    result = (key, avg_features)
+                    filename = f"{compound_name}_{concentration}.pkl".replace(' ', '_').replace('/', '_')
+                    filepath = os.path.join(output_dir, filename)
+                    with open(filepath, 'wb') as f:
+                        pickle.dump(result, f)
+                    print(f"Saved averaged features to {filepath}")
+
             except Exception as e:
                 print(f"Error processing group {compound_name}_{concentration}: {e}. Skipping...")
                 continue
@@ -134,3 +142,4 @@ if __name__ == "__main__":
         batch_size=128, 
         data_root="/scratch/cv-course2025/group8",
         compounds=constants.COMPOUNDS)
+    

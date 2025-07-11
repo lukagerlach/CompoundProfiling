@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset
 from torchvision import transforms
-from models.resnet_50_base import load_pretrained_model, ModelName
+from models.load_model import load_pretrained_model, ModelName
 
 class BBBC021WeakLabelDataset(Dataset):
     """

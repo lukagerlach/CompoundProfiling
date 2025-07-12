@@ -1,6 +1,9 @@
 import torch
+import torch.nn as nn
 from torch.utils.data import DataLoader
 import torchvision.transforms as T
+import os
+from tqdm import tqdm
 from pybbbc import BBBC021
 from models.wsdino_resnet import (
     BBBC021WeakLabelDataset,
@@ -9,33 +12,72 @@ from models.wsdino_resnet import (
     update_teacher
 )
 
-def train_wsdino():
-    # Settings
-    batch_size = 16
-    epochs = 10
-    lr = 1e-4
-    momentum = 0.996
-    temperature = 0.07
+def train_wsdino(
+    root_path="/scratch/cv-course2025/group8",
+    epochs=200,
+    batch_size=512,
+    lr=0.0003,
+    momentum = 0.996,
+    temperature=0.1,
+    # projection_dim=128,
+    save_every=50
+):
+    """
+    Training WS-DINO with a ResNet50 backbone on the BBBC021 dataset.
+    
+    Args:
+        root_path: Path to BBBC021 dataset
+        epochs: Number of training epochs
+        batch_size: Batch size for training
+        lr: Learning rate for optimizer
+        momentum: 
+        temperature: Temperature parameter for DINO-style loss
+        projection_dim: Output dimension of projection head
+        save_every: Save model every N epochs
+    """
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Load data
-    bbbc = BBBC021(root_path="/scratch/cv-course2025/group8/bbbc021") 
+    bbbc = BBBC021(root_path=os.path.join(root_path, "bbbc021"))
     transform = T.Compose([
         T.Resize((224, 224)),
         T.ToTensor(),
+        # T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
+
+    # Create dataset and dataloader
     dataset = BBBC021WeakLabelDataset(bbbc, transform=transform)
-    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+
+    # Use DataParallel for multi-GPU training
+    num_gpus = torch.cuda.device_count()
+    print(f"Using {num_gpus} GPUs for training")
+    
+    dataloader = DataLoader(
+        dataset, 
+        batch_size=batch_size, 
+        shuffle=True, 
+        num_workers=min(16, os.cpu_count()),
+        pin_memory=True,
+        drop_last=True
+    )
 
     num_compounds = len(dataset.compound_to_idx)
 
     # Create models
-    student = get_resnet50(num_classes=num_compounds).to(device)
-    teacher = get_resnet50(num_classes=num_compounds).to(device)
+    student = get_resnet50(num_classes=num_compounds)
+    teacher = get_resnet50(num_classes=num_compounds)
 
     # get weights from file
-    # student = get_resnet50(num_classes=num_compounds, model_type="wsdino").to(device)
-    # teacher = get_resnet50(num_classes=num_compounds, model_type="wsdino".WSDINO).to(device)
+    # student = get_resnet50(num_classes=num_compounds, model_type="wsdino")
+    # teacher = get_resnet50(num_classes=num_compounds, model_type="wsdino")
+
+    # Use DataParallel for multi-GPU training
+    if num_gpus > 1:
+        student = nn.DataParallel(student)
+        teacher = nn.DataParallel(teacher)
+    student = student.to(device)
+    teacher = teacher.to(device)
 
     teacher.load_state_dict(student.state_dict())
     for p in teacher.parameters():
@@ -43,6 +85,11 @@ def train_wsdino():
 
     # Optimizer
     optimizer = torch.optim.Adam(student.parameters(), lr=lr)
+    # weight_decay=0.05, betas=(0.9, 0.999)
+
+    # Create save directory
+    save_dir = os.path.join(root_path, "model_weights")
+    os.makedirs(save_dir, exist_ok=True)
 
     # Training loop
     for epoch in range(epochs):
@@ -70,18 +117,24 @@ def train_wsdino():
 
         # Save model every save_every epochs
         if (epoch + 1) % save_every == 0:
-            if isinstance(model, nn.DataParallel):
-                backbone_state = model.module.backbone.state_dict()
-            else:
-                backbone_state = model.backbone.state_dict()
-                
-            save_path = os.path.join(save_dir, f"resnet50_simclr_epoch_{epoch+1}.pth")
+            model_to_save = student.module if isinstance(student, nn.DataParallel) else student
+            backbone_state = model_to_save.state_dict()
+
+            save_path = os.path.join(save_dir, f"resnet50_wsdino_epoch_{epoch+1}.pth")
             torch.save(backbone_state, save_path)
             print(f"Model saved to {save_path}")
 
     # Save model
-    torch.save(student.state_dict(), f"/scratch/cv-course2025/group8/model_weights/resnet50_wsdino.pth")
+    torch.save(student.state_dict(), os.path.join(save_dir, "model_weights", "resnet50_wsdino.pth"))
     print("Model saved to resnet50_wsdino.pth")
 
 if __name__ == "__main__":
-    train()
+    train_wsdino(
+        root_path="/scratch/cv-course2025/group8",
+        epochs=200,
+        batch_size=512,
+        lr=0.0003,
+        momentum = 0.996,
+        projection_dim=128,
+        save_every=50
+    )

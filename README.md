@@ -72,6 +72,10 @@ python data/pybbbc_loader.py
 
 ## Usage
 
+### Notebooks
+
+For a very convenient way to check out our data, results and also training your own model, we created some Notebooks. you can find them in the notebooks folder. Else, you can just use the scripts that are described below:
+
 ### Training Models
 
 **Train vanilla SimCLR:**

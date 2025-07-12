@@ -15,6 +15,8 @@ from sklearn.metrics import confusion_matrix
 from sklearn.metrics.pairwise import cosine_similarity
 import pandas as pd
 from collections import defaultdict
+from sklearn.neighbors import NearestNeighbors
+import math
 
 # Add parent directory to path to import evaluator
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -125,13 +127,13 @@ def plot_confusion_matrices(model_names, data_root="/scratch/cv-course2025/group
         output_dir (str): Directory to save plots
         distance_measure (str): Distance measure for evaluation
     """
-    from sklearn.neighbors import NearestNeighbors
-    
+
     n_models = len(model_names)
-    fig, axes = plt.subplots(1, n_models, figsize=(6 * n_models, 5))
-    if n_models == 1:
-        axes = [axes]
-    
+    n_cols = 2
+    n_rows = math.ceil(n_models / n_cols)
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(6 * n_cols, 5 * n_rows))
+    axes = axes.flatten()  # Flatten in case of single row
+
     for i, model_name in enumerate(model_names):
         try:
             print(f"Creating confusion matrix for {model_name}...")
@@ -187,7 +189,11 @@ def plot_confusion_matrices(model_names, data_root="/scratch/cv-course2025/group
             ax.text(0.5, 0.5, f'Error: {str(e)}', transform=ax.transAxes, 
                    ha='center', va='center', fontsize=12)
             ax.set_title(f'{model_name} - Error')
-    
+
+    # Hide any unused subplots
+    for j in range(len(model_names), len(axes)):
+        fig.delaxes(axes[j])
+
     plt.suptitle(f'Confusion Matrices ({distance_measure} distance)', fontsize=16, fontweight='bold')
     plt.tight_layout()
     

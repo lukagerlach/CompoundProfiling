@@ -21,7 +21,7 @@ api/index
 :maxdepth: 2
 :caption: Research:
 
-experiments
+results
 ```
 
 ```{toctree}

@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 import umap
 from sklearn.manifold import TSNE
 from collections import defaultdict
+import math
 # Add imports for the new function
 from pybbbc import BBBC021, constants
 import sys
@@ -72,12 +73,14 @@ def plot_tsne_comparison(model_names, data_root="/scratch/cv-course2025/group8",
         figsize (tuple): Figure size (width, height)
     """
     n_models = len(model_names)
+    n_cols = 2
+    n_rows = math.ceil(n_models / n_cols)
+
     if figsize is None:
-        figsize = (6 * n_models, 5)
+        figsize = (6 * n_cols, 5 * n_rows)
     
-    fig, axes = plt.subplots(1, n_models, figsize=figsize)
-    if n_models == 1:
-        axes = [axes]
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=figsize, squeeze=False)
+    axes = axes.flatten()
     
     # Get all unique MoAs across all models for consistent coloring
     all_moas = set()
@@ -118,6 +121,10 @@ def plot_tsne_comparison(model_names, data_root="/scratch/cv-course2025/group8",
         # Add legend only to the last subplot
         if i == n_models - 1:
             ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+
+    # Hide any unused subplots
+    for j in range(n_models, len(axes)):
+        fig.delaxes(axes[j])
     
     plt.tight_layout()
     
@@ -138,12 +145,14 @@ def plot_umap_comparison(model_names, data_root="/scratch/cv-course2025/group8",
         figsize (tuple): Figure size (width, height)
     """
     n_models = len(model_names)
+    n_cols = 2
+    n_rows = math.ceil(n_models / n_cols)
+
     if figsize is None:
-        figsize = (6 * n_models, 5)
+        figsize = (6 * n_cols, 5 * n_rows)
     
-    fig, axes = plt.subplots(1, n_models, figsize=figsize)
-    if n_models == 1:
-        axes = [axes]
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=figsize, squeeze=False)
+    axes = axes.flatten()
     
     # Get all unique MoAs across all models for consistent coloring
     all_moas = set()
@@ -184,6 +193,10 @@ def plot_umap_comparison(model_names, data_root="/scratch/cv-course2025/group8",
         # Add legend only to the last subplot
         if i == n_models - 1:
             ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+
+    # Hide any unused subplots
+    for j in range(n_models, len(axes)):
+        fig.delaxes(axes[j])
     
     plt.tight_layout()
     

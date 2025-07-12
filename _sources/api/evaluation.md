@@ -28,7 +28,7 @@
 ## Visualization
 
 ```{eval-rst}
-.. automodule:: evaluation.visualize_embeddings
+.. automodule:: evaluation.visualization.visualize_embeddings
    :members:
    :undoc-members:
    :show-inheritance:

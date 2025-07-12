@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Experiments &#8212; Compound MOA Prediction</title>
+    <title>Results &#8212; Compound MOA Prediction</title>
   
   
   
@@ -40,9 +40,11 @@
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'experiments';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'results';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Authors" href="authors.html" />
+    <link rel="prev" title="Experiments" href="api/experiments.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -104,8 +106,6 @@
     <div class="bd-container__inner bd-page-width">
       
       
-      
-        
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -172,8 +172,8 @@
 </details></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Research:</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="results.html">Results</a></li>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Results</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Project Information:</span></p>
 <ul class="nav bd-sidenav">
@@ -250,7 +250,7 @@
       
       
       
-      <li><a href="https://github.com/lukagerlach/CompoundProfiling/edit/main/docs/source/experiments.md" target="_blank"
+      <li><a href="https://github.com/lukagerlach/CompoundProfiling/edit/main/docs/source/results.md" target="_blank"
    class="btn btn-sm btn-source-edit-button dropdown-item"
    title="Suggest edit"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -267,7 +267,7 @@
       
       
       
-      <li><a href="https://github.com/lukagerlach/CompoundProfiling/issues/new?title=Issue%20on%20page%20%2Fexperiments.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/lukagerlach/CompoundProfiling/issues/new?title=Issue%20on%20page%20%2Fresults.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -297,7 +297,7 @@
       
       
       
-      <li><a href="_sources/experiments.md" target="_blank"
+      <li><a href="_sources/results.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -381,7 +381,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Experiments</h1>
+    <h1>Results</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -391,10 +391,10 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#baseline-results">Baseline Results</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#resnet-50-imagenet-pretrained">ResNet-50 ImageNet Pretrained</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-performance-comparison">Model Performance Comparison</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#confusion-matrices">Confusion Matrices</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#similarity-analysis">Similarity Analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dimensionality-reduction-visualization">Dimensionality Reduction Visualization</a></li>
 </ul>
             </nav>
         </div>
@@ -406,39 +406,28 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="experiments">
-<h1>Experiments<a class="headerlink" href="#experiments" title="Link to this heading">#</a></h1>
-<p>This section documents experimental results and analysis.</p>
-<section id="baseline-results">
-<h2>Baseline Results<a class="headerlink" href="#baseline-results" title="Link to this heading">#</a></h2>
-<section id="resnet-50-imagenet-pretrained">
-<h3>ResNet-50 ImageNet Pretrained<a class="headerlink" href="#resnet-50-imagenet-pretrained" title="Link to this heading">#</a></h3>
-<div class="pst-scrollable-table-container"><table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Method</p></th>
-<th class="head"><p>Batch Size</p></th>
-<th class="head"><p>Learning Rate</p></th>
-<th class="head"><p>Accuracy</p></th>
-<th class="head"><p>Training Time</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>SimCLR</p></td>
-<td><p>64</p></td>
-<td><p>1e-3</p></td>
-<td><p>TBD</p></td>
-<td><p>TBD</p></td>
-</tr>
-<tr class="row-odd"><td><p>WS-DINO</p></td>
-<td><p>64</p></td>
-<td><p>1e-3</p></td>
-<td><p>TBD</p></td>
-<td><p>TBD</p></td>
-</tr>
-</tbody>
-</table>
-</div>
+  <section id="results">
+<h1>Results<a class="headerlink" href="#results" title="Link to this heading">#</a></h1>
+<p>This section documents experimental results and analysis for compound profiling using different self-supervised learning approaches.</p>
+<section id="model-performance-comparison">
+<h2>Model Performance Comparison<a class="headerlink" href="#model-performance-comparison" title="Link to this heading">#</a></h2>
+<p>The following plot shows the accuracy comparison between different models using cosine similarity as the distance metric:</p>
+<p><img alt="Accuracy comparison using cosine similarity" src="_images/accuracy_comparison_cosine.png" /></p>
 </section>
+<section id="confusion-matrices">
+<h2>Confusion Matrices<a class="headerlink" href="#confusion-matrices" title="Link to this heading">#</a></h2>
+<p>Detailed confusion matrices for model evaluation. We show how treatments of each MOA are classified:</p>
+<p><img alt="Confusion matrices with cosine similarity" src="_images/confusion_matrices_cosine.png" /></p>
+</section>
+<section id="similarity-analysis">
+<h2>Similarity Analysis<a class="headerlink" href="#similarity-analysis" title="Link to this heading">#</a></h2>
+<p>We compare similarity stats between same and different MOAs here:</p>
+<p><img alt="Similarity comparison between models" src="_images/similarity_comparison.png" /></p>
+</section>
+<section id="dimensionality-reduction-visualization">
+<h2>Dimensionality Reduction Visualization<a class="headerlink" href="#dimensionality-reduction-visualization" title="Link to this heading">#</a></h2>
+<p>t-SNE visualization comparing treatment embeddings from different models (Base ResNet, SimCLR variants, and WS-DINO):</p>
+<p><img alt="t-SNE comparison of model embeddings" src="_images/tsne_comparison_base_resnet_simclr_vanilla_ws_neg_simclr_vanilla_simclr_ws_collapsed.png" /></p>
 </section>
 </section>
 
@@ -453,6 +442,24 @@ document.write(`
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="api/experiments.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Experiments</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="authors.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Authors</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               
@@ -469,10 +476,10 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#baseline-results">Baseline Results</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#resnet-50-imagenet-pretrained">ResNet-50 ImageNet Pretrained</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-performance-comparison">Model Performance Comparison</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#confusion-matrices">Confusion Matrices</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#similarity-analysis">Similarity Analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dimensionality-reduction-visualization">Dimensionality Reduction Visualization</a></li>
 </ul>
   </nav></div>
 

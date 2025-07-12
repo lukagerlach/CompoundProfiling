@@ -173,7 +173,7 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Research:</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../experiments.html">Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../results.html">Results</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Project Information:</span></p>
 <ul class="nav bd-sidenav">
@@ -399,7 +399,13 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation.extractor.extract_moa_features"><code class="docutils literal notranslate"><span class="pre">extract_moa_features()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualization">Visualization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-evaluation.visualization.visualize_embeddings">Visualization</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation.visualization.visualize_embeddings.load_model_features"><code class="docutils literal notranslate"><span class="pre">load_model_features()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation.visualization.visualize_embeddings.plot_tsne_comparison"><code class="docutils literal notranslate"><span class="pre">plot_tsne_comparison()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation.visualization.visualize_embeddings.plot_umap_comparison"><code class="docutils literal notranslate"><span class="pre">plot_umap_comparison()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation.visualization.visualize_embeddings.plot_accuracy_vs_image_count"><code class="docutils literal notranslate"><span class="pre">plot_accuracy_vs_image_count()</span></code></a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -460,8 +466,82 @@ document.write(`
 </dd></dl>
 
 </section>
-<section id="visualization">
-<h2>Visualization<a class="headerlink" href="#visualization" title="Link to this heading">#</a></h2>
+<section id="module-evaluation.visualization.visualize_embeddings">
+<span id="visualization"></span><h2>Visualization<a class="headerlink" href="#module-evaluation.visualization.visualize_embeddings" title="Link to this heading">#</a></h2>
+<p>Visualize BBBC021 compound embeddings using t-SNE and UMAP.</p>
+<p>This script loads pre-extracted feature embeddings from .pkl files,
+applies t-SNE and UMAP dimensionality reduction, and visualizes the
+resulting 2D projections colored by Mechanism of Action (MoA).</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="evaluation.visualization.visualize_embeddings.load_model_features">
+<span class="sig-prename descclassname"><span class="pre">evaluation.visualization.visualize_embeddings.</span></span><span class="sig-name descname"><span class="pre">load_model_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/scratch/cv-course2025/group8'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evaluation/visualization/visualize_embeddings.html#load_model_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evaluation.visualization.visualize_embeddings.load_model_features" title="Link to this definition">#</a></dt>
+<dd><p>Load features for a single model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Name of the model (e.g., ‘base_resnet’, ‘simclr’, ‘wsdino’)</p></li>
+<li><p><strong>data_root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Root directory containing bbbc021_features</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(features, moas) where features is numpy array and moas is list</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evaluation.visualization.visualize_embeddings.plot_tsne_comparison">
+<span class="sig-prename descclassname"><span class="pre">evaluation.visualization.visualize_embeddings.</span></span><span class="sig-name descname"><span class="pre">plot_tsne_comparison</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/scratch/cv-course2025/group8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/scratch/cv-course2025/group8/plots'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evaluation/visualization/visualize_embeddings.html#plot_tsne_comparison"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evaluation.visualization.visualize_embeddings.plot_tsne_comparison" title="Link to this definition">#</a></dt>
+<dd><p>Create side-by-side t-SNE plots for multiple models.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_names</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a>) – List of model names to compare</p></li>
+<li><p><strong>data_root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Root directory containing bbbc021_features</p></li>
+<li><p><strong>output_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Directory to save plots</p></li>
+<li><p><strong>figsize</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a>) – Figure size (width, height)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evaluation.visualization.visualize_embeddings.plot_umap_comparison">
+<span class="sig-prename descclassname"><span class="pre">evaluation.visualization.visualize_embeddings.</span></span><span class="sig-name descname"><span class="pre">plot_umap_comparison</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/scratch/cv-course2025/group8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/scratch/cv-course2025/group8/plots'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evaluation/visualization/visualize_embeddings.html#plot_umap_comparison"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evaluation.visualization.visualize_embeddings.plot_umap_comparison" title="Link to this definition">#</a></dt>
+<dd><p>Create side-by-side UMAP plots for multiple models.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_names</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a>) – List of model names to compare</p></li>
+<li><p><strong>data_root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Root directory containing bbbc021_features</p></li>
+<li><p><strong>output_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Directory to save plots</p></li>
+<li><p><strong>figsize</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a>) – Figure size (width, height)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evaluation.visualization.visualize_embeddings.plot_accuracy_vs_image_count">
+<span class="sig-prename descclassname"><span class="pre">evaluation.visualization.visualize_embeddings.</span></span><span class="sig-name descname"><span class="pre">plot_accuracy_vs_image_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/scratch/cv-course2025/group8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/scratch/cv-course2025/group8/plots'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance_measure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_by</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'accuracy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_image_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evaluation/visualization/visualize_embeddings.html#plot_accuracy_vs_image_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evaluation.visualization.visualize_embeddings.plot_accuracy_vs_image_count" title="Link to this definition">#</a></dt>
+<dd><p>Create a dual-axis plot showing per-compound accuracies with image counts context.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_names</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a>) – List of model names to compare</p></li>
+<li><p><strong>data_root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Root directory containing bbbc021_features and dataset</p></li>
+<li><p><strong>output_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Directory to save plots</p></li>
+<li><p><strong>distance_measure</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Distance measure for evaluation (“cosine”, “l1”, “l2”)</p></li>
+<li><p><strong>sort_by</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Sort compounds by “accuracy”, “image_count”, or “compound_name”</p></li>
+<li><p><strong>max_image_count</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – Maximum value for the image count y-axis (right side). If None, uses automatic scaling.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 
@@ -518,7 +598,13 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation.extractor.extract_moa_features"><code class="docutils literal notranslate"><span class="pre">extract_moa_features()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualization">Visualization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-evaluation.visualization.visualize_embeddings">Visualization</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation.visualization.visualize_embeddings.load_model_features"><code class="docutils literal notranslate"><span class="pre">load_model_features()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation.visualization.visualize_embeddings.plot_tsne_comparison"><code class="docutils literal notranslate"><span class="pre">plot_tsne_comparison()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation.visualization.visualize_embeddings.plot_umap_comparison"><code class="docutils literal notranslate"><span class="pre">plot_umap_comparison()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation.visualization.visualize_embeddings.plot_accuracy_vs_image_count"><code class="docutils literal notranslate"><span class="pre">plot_accuracy_vs_image_count()</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

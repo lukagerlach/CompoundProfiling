@@ -254,13 +254,13 @@ def plot_similarity_comparison(model_names, data_root="/scratch/cv-course2025/gr
             
             # Create histograms
             ax_dist.hist(same_moa_sims, bins=50, alpha=0.7, label='Same MoA', 
-                        color='green', density=True)
+                        color='green')
             ax_dist.hist(diff_moa_sims, bins=50, alpha=0.7, label='Different MoA', 
-                        color='red', density=True)
+                        color='red')
             
             ax_dist.set_title(f'{model_name}')
             ax_dist.set_xlabel('Cosine Similarity')
-            ax_dist.set_ylabel('Density')
+            ax_dist.set_ylabel('Frequency')
             ax_dist.legend()
             ax_dist.grid(alpha=0.3)
             

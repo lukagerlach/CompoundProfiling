@@ -335,25 +335,32 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torchvision.transforms</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">transforms</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">models.load_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_pretrained_model</span><span class="p">,</span> <span class="n">create_feature_extractor</span><span class="p">,</span> <span class="n">ModelName</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pybbbc</span><span class="w"> </span><span class="kn">import</span> <span class="n">BBBC021</span><span class="p">,</span> <span class="n">constants</span>
-
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-
+<span class="kn">from</span><span class="w"> </span><span class="nn">experiments.tvn</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypicalVariationNormalizer</span>  <span class="c1"># Import TVN module</span>
 
 <div class="viewcode-block" id="extract_moa_features">
 <a class="viewcode-back" href="../../api/evaluation.html#evaluation.extractor.extract_moa_features">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">extract_moa_features</span><span class="p">(</span><span class="n">model_name</span><span class="p">:</span> <span class="n">ModelName</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span> <span class="n">data_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;/scratch/cv-course2025/group8&quot;</span><span class="p">,</span> <span class="n">compounds</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">extract_moa_features</span><span class="p">(</span>
+        <span class="n">model_name</span><span class="p">:</span> <span class="n">ModelName</span><span class="p">,</span> 
+        <span class="n">device</span><span class="p">,</span> 
+        <span class="n">batch_size</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> 
+        <span class="n">data_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;/scratch/cv-course2025/group8&quot;</span><span class="p">,</span> 
+        <span class="n">compounds</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">tvn</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extract features for the BBBC021 dataset using a pretrained ResNet50 model.</span>
 <span class="sd">    </span>
 <span class="sd">    Args:</span>
-<span class="sd">        model_name: Name of the model to use. Is of type MODEL_NAMES.</span>
-<span class="sd">        device: Device to run the model on</span>
-<span class="sd">        batch_size: Batch size for data loading</span>
+<span class="sd">        model_name: Name of the model to use. Is of type ModelName.</span>
+<span class="sd">        device: Device to run the model on.</span>
+<span class="sd">        batch_size: Batch size for data loading.</span>
 <span class="sd">        data_root: Root directory where the BBBC021 dataset is stored.</span>
 <span class="sd">        compounds: List of compounds to process. If None, all compounds will be processed.</span>
+<span class="sd">        tvn: If True, apply Typical Variation Normalization to features before averaging and saving.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="c1"># Load pretrained ResNet50 model</span>
@@ -371,10 +378,9 @@ document.write(`
     <span class="k">else</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">compound</span> <span class="ow">in</span> <span class="n">compounds</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">compound</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">constants</span><span class="o">.</span><span class="n">COMPOUNDS</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Compound &#39;</span><span class="si">{</span><span class="n">compound</span><span class="si">}</span><span class="s2">&#39; is not a valid compound. &quot;</span>
-                                 <span class="sa">f</span><span class="s2">&quot;Valid compounds are: </span><span class="si">{</span><span class="n">constants</span><span class="o">.</span><span class="n">COMPOUNDS</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    
-    <span class="c1"># Create output directory with model name</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Compound &#39;</span><span class="si">{</span><span class="n">compound</span><span class="si">}</span><span class="s2">&#39; is not valid. Valid compounds: </span><span class="si">{</span><span class="n">constants</span><span class="o">.</span><span class="n">COMPOUNDS</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Output directory</span>
     <span class="n">output_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_root</span><span class="p">,</span> <span class="s2">&quot;bbbc021_features&quot;</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span>
     <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     
@@ -385,12 +391,16 @@ document.write(`
     <span class="c1"># Set device</span>
     <span class="n">feature_extractor</span> <span class="o">=</span> <span class="n">feature_extractor</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
     <span class="n">feature_extractor</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
-    
+
+    <span class="c1"># Collect per-compound features</span>
+    <span class="n">compound_features</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">tvn_features</span> <span class="o">=</span> <span class="p">[]</span>
+
     <span class="c1"># Process each compound dynamically</span>
-    <span class="k">for</span> <span class="n">compound</span> <span class="ow">in</span> <span class="n">compounds</span><span class="p">:</span>        
-        <span class="n">data</span> <span class="o">=</span> <span class="n">BBBC021</span><span class="p">(</span><span class="n">root_path</span><span class="o">=</span><span class="n">data_root</span><span class="p">,</span> <span class="n">compound</span><span class="o">=</span><span class="n">compound</span><span class="p">)</span>  <span class="c1"># Fixed: use single compound</span>
+    <span class="k">for</span> <span class="n">compound</span> <span class="ow">in</span> <span class="n">compounds</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">BBBC021</span><span class="p">(</span><span class="n">root_path</span><span class="o">=</span><span class="n">data_root</span><span class="p">,</span> <span class="n">compound</span><span class="o">=</span><span class="n">compound</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing Compound: </span><span class="si">{</span><span class="n">compound</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">images</span><span class="p">)</span><span class="si">}</span><span class="s2"> images&quot;</span><span class="p">)</span>
-        
+
         <span class="c1"># Dictionary to store images grouped by (compound, concentration, moa)</span>
         <span class="n">image_groups</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
         
@@ -406,6 +416,7 @@ document.write(`
             
             <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">image_groups</span><span class="p">:</span>
                 <span class="n">image_groups</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
             <span class="c1"># Convert numpy array to tensor if needed</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
                 <span class="n">image</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">image</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
@@ -440,42 +451,60 @@ document.write(`
                 
                 <span class="n">all_features</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">all_features</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
-                <span class="k">if</span> <span class="n">compound_name</span> <span class="o">==</span> <span class="s2">&quot;DMSO&quot;</span><span class="p">:</span>
-                    <span class="c1"># Save one .pkl per image (for TVN) in DMSO subfolder</span>
-                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">feature</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">all_features</span><span class="p">):</span>
-                        <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">compound_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">concentration</span><span class="si">}</span><span class="s2">_img</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.pkl&quot;</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">)</span>
-                        <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dmso_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-                        <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">feature</span><span class="p">)</span>
-                        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saved </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">all_features</span><span class="p">)</span><span class="si">}</span><span class="s2"> per-image features for DMSO group to </span><span class="si">{</span><span class="n">dmso_dir</span><span class="si">}</span><span class="s2"> for TVN&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">tvn</span> <span class="ow">and</span> <span class="n">compound_name</span> <span class="o">==</span> <span class="s2">&quot;DMSO&quot;</span><span class="p">:</span>
+                    <span class="n">tvn_features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">all_features</span><span class="p">)</span>  <span class="c1"># Store for TVN fitting</span>
 
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="c1"># Save average feature (standard)</span>
-                    <span class="n">avg_features</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">all_features</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-                    <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">avg_features</span><span class="p">)</span>
-                    <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">compound_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">concentration</span><span class="si">}</span><span class="s2">.pkl&quot;</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">)</span>
-                    <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saved averaged features to </span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">compound_features</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_features</span>  <span class="c1"># Store per-image features for every treatment</span>
 
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error processing group </span><span class="si">{</span><span class="n">compound_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">concentration</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">. Skipping...&quot;</span><span class="p">)</span>
-                <span class="k">continue</span></div>
+                <span class="k">continue</span>
 
+    <span class="c1"># TVN logic</span>
+    <span class="k">if</span> <span class="n">tvn</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Fitting TVN from DMSO images...&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">tvn_features</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No DMSO features found to fit TVN.&quot;</span><span class="p">)</span>
+        <span class="n">dmso_concat</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">tvn_features</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">tvn</span> <span class="o">=</span> <span class="n">TypicalVariationNormalizer</span><span class="p">()</span>
+        <span class="n">tvn</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">dmso_concat</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Applying TVN and saving averaged features...&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">features</span> <span class="ow">in</span> <span class="n">compound_features</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">transformed</span> <span class="o">=</span> <span class="n">tvn</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
+            <span class="n">avg_feature</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">transformed</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">avg_feature</span><span class="p">)</span>
+            <span class="n">compound_name</span><span class="p">,</span> <span class="n">concentration</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">key</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">compound_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">concentration</span><span class="si">}</span><span class="s2">.pkl&quot;</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>
+            <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saved averaged TVN features to </span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saving non-TVN averaged features...&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">features</span> <span class="ow">in</span> <span class="n">compound_features</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">avg_feature</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">avg_feature</span><span class="p">)</span>
+            <span class="n">compound_name</span><span class="p">,</span> <span class="n">concentration</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">key</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">compound_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">concentration</span><span class="si">}</span><span class="s2">.pkl&quot;</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>
+            <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saved averaged features to </span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
 <span class="c1"># main function to run the feature extraction</span>
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    
     <span class="n">extract_moa_features</span><span class="p">(</span>
-        <span class="n">model_name</span><span class="o">=</span><span class="s2">&quot;simclr&quot;</span><span class="p">,</span>
-        <span class="n">device</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">),</span> 
-        <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> 
+        <span class="n">model_name</span><span class="o">=</span><span class="s2">&quot;simclr&quot;</span><span class="p">,</span> 
+        <span class="c1"># model_name=&quot;wsdino&quot;,</span>
+        <span class="n">device</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">),</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>
         <span class="n">data_root</span><span class="o">=</span><span class="s2">&quot;/scratch/cv-course2025/group8&quot;</span><span class="p">,</span>
-        <span class="n">compounds</span><span class="o">=</span><span class="n">constants</span><span class="o">.</span><span class="n">COMPOUNDS</span><span class="p">)</span>
-    
+        <span class="n">compounds</span><span class="o">=</span><span class="n">constants</span><span class="o">.</span><span class="n">COMPOUNDS</span><span class="p">,</span>
+        <span class="n">tvn</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
 </pre></div>
 
                 </article>

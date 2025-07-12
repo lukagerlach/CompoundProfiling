@@ -400,7 +400,7 @@ document.write(`
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-training.wsdino_resnet_train">WS-DINO ResNet Training</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#training.wsdino_resnet_train.train"><code class="docutils literal notranslate"><span class="pre">train()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#training.wsdino_resnet_train.train_wsdino"><code class="docutils literal notranslate"><span class="pre">train_wsdino()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -469,9 +469,24 @@ optionally with compound-aware loss that excludes same-compound negatives.</p>
 <section id="module-training.wsdino_resnet_train">
 <span id="ws-dino-resnet-training"></span><h2>WS-DINO ResNet Training<a class="headerlink" href="#module-training.wsdino_resnet_train" title="Link to this heading">#</a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="training.wsdino_resnet_train.train">
-<span class="sig-prename descclassname"><span class="pre">training.wsdino_resnet_train.</span></span><span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/training/wsdino_resnet_train.html#train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#training.wsdino_resnet_train.train" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="training.wsdino_resnet_train.train_wsdino">
+<span class="sig-prename descclassname"><span class="pre">training.wsdino_resnet_train.</span></span><span class="sig-name descname"><span class="pre">train_wsdino</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/scratch/cv-course2025/group8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">512</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0003</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">momentum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.996</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_every</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/training/wsdino_resnet_train.html#train_wsdino"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#training.wsdino_resnet_train.train_wsdino" title="Link to this definition">#</a></dt>
+<dd><p>Training WS-DINO with a ResNet50 backbone on the BBBC021 dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root_path</strong> – Path to BBBC021 dataset</p></li>
+<li><p><strong>epochs</strong> – Number of training epochs</p></li>
+<li><p><strong>batch_size</strong> – Batch size for training</p></li>
+<li><p><strong>lr</strong> – Learning rate for optimizer</p></li>
+<li><p><strong>momentum</strong></p></li>
+<li><p><strong>temperature</strong> – Temperature parameter for DINO-style loss</p></li>
+<li><p><strong>projection_dim</strong> – Output dimension of projection head</p></li>
+<li><p><strong>save_every</strong> – Save model every N epochs</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 </section>
@@ -530,7 +545,7 @@ optionally with compound-aware loss that excludes same-compound negatives.</p>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-training.wsdino_resnet_train">WS-DINO ResNet Training</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#training.wsdino_resnet_train.train"><code class="docutils literal notranslate"><span class="pre">train()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#training.wsdino_resnet_train.train_wsdino"><code class="docutils literal notranslate"><span class="pre">train_wsdino()</span></code></a></li>
 </ul>
 </li>
 </ul>

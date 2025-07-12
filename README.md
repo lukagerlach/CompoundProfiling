@@ -119,22 +119,22 @@ python evaluation/visualize_embeddings.py
 ```
 CompoundProfiling/
 ├── data/                    # Data loading and preprocessing
+├── docs/                    # all things shinx
 ├── models/                  # Model architectures
 ├── training/               # Training scripts
 ├── evaluation/             # Evaluation and visualization tools
 ├── experiments/            # Experimental utilities (TVN, etc.)
 ├── notebooks/              # Jupyter notebooks for exploration
-└── configs/                # Configuration files
 ```
 
 ## Results
 
-TBA
+Results are available in our **[Project Documentation](https://lukagerlach.github.io/CompoundProfiling/results.html)**.
 
 ## Dependencies
 
 Core requirements:
-- PyTorch >= 1.9.0
+- PyTorch
 - torchvision
 - scikit-learn
 - numpy

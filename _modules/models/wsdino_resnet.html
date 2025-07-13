@@ -359,21 +359,6 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">bbbc021</span> <span class="o">=</span> <span class="n">bbbc021</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="n">transform</span>
 
-        <span class="c1"># Filter out samples with unknown MoA</span>
-        <span class="c1"># self.valid_samples = [</span>
-            <span class="c1"># (img, self.compound_to_idx[m[1][0]])</span>
-            <span class="c1"># for img, m in bbbc021 if m[1][2] != &#39;null&#39;</span>
-            <span class="c1">#(img, metadata) for img, metadata in bbbc021</span>
-            <span class="c1">#if metadata.compound.moa != &#39;null&#39;</span>
-        <span class="c1">#]</span>
-
-        <span class="c1"># Create Compound → index mapping</span>
-        <span class="c1">#self.compound_to_idx = {</span>
-        <span class="c1">#    compound: idx for idx, compound in enumerate(sorted(set(</span>
-                <span class="c1"># m[1][0] for _, m in bbbc021 if m[1][2] != &#39;null&#39;  # skip unknown MoAs</span>
-        <span class="c1">#        meta.compound.compound for _, meta in self.valid_samples</span>
-        <span class="c1">#    )))</span>
-        <span class="c1">#}</span>
         <span class="c1"># Store only indices for samples with valid MoA</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">valid_indices</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">meta</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bbbc021</span><span class="p">)</span>
@@ -392,19 +377,9 @@ document.write(`
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">valid_indices</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
-        <span class="c1">#img, weak_label = self.valid_samples[idx]</span>
-        <span class="c1">#moa = self.bbbc021[idx][1][2]  # access full meta for eval</span>
-        <span class="c1">#img, meta = self.valid_samples[idx]</span>
-        <span class="c1">#compound_id = meta.compound.compound</span>
-        <span class="c1">#weak_label = self.compound_to_idx[compound_id]</span>
-        <span class="c1">#moa = meta.compound.moa</span>
-        <span class="c1">#if self.transform:</span>
-        <span class="c1">#    img = self.transform(img)</span>
-        <span class="c1">#return img, weak_label, moa</span>
         <span class="n">actual_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_indices</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
         <span class="n">img</span><span class="p">,</span> <span class="n">meta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bbbc021</span><span class="p">[</span><span class="n">actual_idx</span><span class="p">]</span>
 
-        <span class="c1"># Ensure image is a PyTorch tensor</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
             <span class="n">img</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">img</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
 
@@ -413,9 +388,11 @@ document.write(`
         <span class="n">moa</span> <span class="o">=</span> <span class="n">meta</span><span class="o">.</span><span class="n">compound</span><span class="o">.</span><span class="n">moa</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">:</span>
-            <span class="n">img</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+            <span class="n">crops</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>  <span class="c1"># List of tensors</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">crops</span> <span class="o">=</span> <span class="p">[</span><span class="n">img</span><span class="p">]</span>
 
-        <span class="k">return</span> <span class="n">img</span><span class="p">,</span> <span class="n">weak_label</span><span class="p">,</span> <span class="n">moa</span></div>
+        <span class="k">return</span> <span class="n">crops</span><span class="p">,</span> <span class="n">weak_label</span><span class="p">,</span> <span class="n">moa</span></div>
 
 
 <div class="viewcode-block" id="DINOProjectionHead">
@@ -522,6 +499,26 @@ document.write(`
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">ps</span><span class="p">,</span> <span class="n">pt</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">student</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">teacher</span><span class="o">.</span><span class="n">parameters</span><span class="p">()):</span>
         <span class="n">pt</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">pt</span><span class="o">.</span><span class="n">data</span> <span class="o">*</span> <span class="n">m</span> <span class="o">+</span> <span class="n">ps</span><span class="o">.</span><span class="n">data</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">m</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MultiCropTransform">
+<a class="viewcode-back" href="../../api/models.html#models.wsdino_resnet.MultiCropTransform">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MultiCropTransform</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate 2 global crops and N local crops from the same image.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="MultiCropTransform.__init__">
+<a class="viewcode-back" href="../../api/models.html#models.wsdino_resnet.MultiCropTransform.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">global_transform</span><span class="p">,</span> <span class="n">local_transform</span><span class="p">,</span> <span class="n">num_local_crops</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_transform</span> <span class="o">=</span> <span class="n">global_transform</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">local_transform</span> <span class="o">=</span> <span class="n">local_transform</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_local_crops</span> <span class="o">=</span> <span class="n">num_local_crops</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">crops</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">global_transform</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)]</span>
+        <span class="n">crops</span> <span class="o">+=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">local_transform</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_local_crops</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">crops</span></div>
 
 </pre></div>
 

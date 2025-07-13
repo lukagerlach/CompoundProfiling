@@ -384,22 +384,6 @@ document.write(`
         <span class="k">return</span> <span class="n">x_transformed</span></div>
 </div>
 
-
-<span class="c1"># not needed when using tvn in the extractor</span>
-<div class="viewcode-block" id="correct_tvn">
-<a class="viewcode-back" href="../../api/experiments.html#experiments.tvn.correct_tvn">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">correct_tvn</span><span class="p">(</span><span class="n">features_DMSO</span><span class="p">,</span> <span class="n">features_all</span><span class="p">):</span>
-    <span class="c1"># Strip metadata columns if included</span>
-    <span class="n">labels</span> <span class="o">=</span> <span class="n">features_all</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">6</span><span class="p">:]</span>  <span class="c1"># last 6 are metadata</span>
-    <span class="n">features_all_core</span> <span class="o">=</span> <span class="n">features_all</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">6</span><span class="p">]</span>
-
-    <span class="c1"># Fit PCA on full DMSO features (no labels assumed)</span>
-    <span class="n">p</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">384</span><span class="p">,</span> <span class="n">whiten</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">p</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_DMSO</span><span class="p">)</span>
-
-    <span class="n">features_all_tvn</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">features_all_core</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">features_all_tvn</span><span class="p">,</span> <span class="n">labels</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
-
 </pre></div>
 
                 </article>

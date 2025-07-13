@@ -22,6 +22,27 @@ import math
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from evaluator import evaluate_model
 
+def group_features_by_compound(model_name, data_root):
+    """Groups features by compound name."""
+    feature_dir = os.path.join(data_root, "bbbc021_features", model_name)
+    if not os.path.exists(feature_dir):
+        raise FileNotFoundError(f"Features directory not found: {feature_dir}")
+
+    compound_features = defaultdict(list)
+    for file in os.listdir(feature_dir):
+        if not file.endswith(".pkl") or "DMSO" in file:
+            continue
+        filepath = os.path.join(feature_dir, file)
+        try:
+            with open(filepath, 'rb') as f:
+                (compound_info, feat) = pickle.load(f)
+                compound, _, moa = compound_info
+                if moa != "null":
+                    compound_features[compound].append({'feature': feat.numpy() if hasattr(feat, 'numpy') else feat, 'moa': moa})
+        except Exception as e:
+            print(f"Warning: Could not load {filepath}: {e}")
+    return compound_features
+
 def load_model_features_and_moas(model_name, data_root="/scratch/cv-course2025/group8"):
     """
     Load features and MoAs for a single model.
@@ -120,6 +141,7 @@ def plot_accuracy_comparison(model_names, data_root="/scratch/cv-course2025/grou
 def plot_confusion_matrices(model_names, data_root="/scratch/cv-course2025/group8", output_dir="/scratch/cv-course2025/group8/plots", distance_measure="cosine"):
     """
     Create confusion matrices for each model showing predicted vs actual MoA.
+    This uses a leave-one-compound-out cross-validation approach.
     
     Args:
         model_names (list): List of model names to compare
@@ -132,45 +154,77 @@ def plot_confusion_matrices(model_names, data_root="/scratch/cv-course2025/group
     n_cols = 2
     n_rows = math.ceil(n_models / n_cols)
     fig, axes = plt.subplots(n_rows, n_cols, figsize=(6 * n_cols, 5 * n_rows))
-    axes = axes.flatten()  # Flatten in case of single row
+    
+    # Handle case where we have only one subplot
+    if n_models == 1:
+        axes = [axes]
+    else:
+        axes = axes.flatten()
+
+    # Get a superset of all MoAs across all models for consistent plotting
+    all_moas = set()
+    all_compound_features = {}
+    for model_name in model_names:
+        try:
+            _, moas = load_model_features_and_moas(model_name, data_root)
+            all_moas.update(moas)
+            all_compound_features[model_name] = group_features_by_compound(model_name, data_root)
+        except (FileNotFoundError, ValueError) as e:
+            print(f"Could not load data for {model_name}: {e}")
+    unique_moas = sorted(list(all_moas))
 
     for i, model_name in enumerate(model_names):
+        ax = axes[i]
         try:
             print(f"Creating confusion matrix for {model_name}...")
             
-            # Load features and MoAs
-            features, moas = load_model_features_and_moas(model_name, data_root)
-            
-            # Get unique MoAs
-            unique_moas = sorted(set(moas))
-            
-            # Perform 1-NN classification
-            if distance_measure == "cosine":
-                # Normalize features for cosine similarity
-                features_norm = features / np.linalg.norm(features, axis=1, keepdims=True)
-                nbrs = NearestNeighbors(n_neighbors=2, metric='cosine')
-                nbrs.fit(features_norm)
-                distances, indices = nbrs.kneighbors(features_norm)
-            else:
-                nbrs = NearestNeighbors(n_neighbors=2, metric=distance_measure)
-                nbrs.fit(features)
-                distances, indices = nbrs.kneighbors(features)
-            
-            # Get predictions (nearest neighbor that's not itself)
+            compound_features = all_compound_features.get(model_name)
+            if not compound_features:
+                raise ValueError("No compound features loaded.")
+
+            compounds = list(compound_features.keys())
             predicted_moas = []
             actual_moas = []
-            
-            for j, (dist, idx) in enumerate(zip(distances, indices)):
-                # Skip self (first neighbor)
-                nearest_idx = idx[1]
-                predicted_moas.append(moas[nearest_idx])
-                actual_moas.append(moas[j])
-            
+
+            for compound_to_test in compounds:
+                # Gallery: all other compounds
+                gallery_features = []
+                gallery_moas = []
+                for c in compounds:
+                    if c != compound_to_test:
+                        for sample in compound_features[c]:
+                            gallery_features.append(sample['feature'])
+                            gallery_moas.append(sample['moa'])
+                
+                if not gallery_features:
+                    continue
+
+                gallery_features = np.array(gallery_features)
+                gallery_moas = np.array(gallery_moas)
+
+                # Query: features of the compound to test
+                query_features = [sample['feature'] for sample in compound_features[compound_to_test]]
+                query_moas = [sample['moa'] for sample in compound_features[compound_to_test]]
+                
+                # Fit NearestNeighbors on the gallery
+                if distance_measure == "cosine":
+                    gallery_features = gallery_features / np.linalg.norm(gallery_features, axis=1, keepdims=True)
+                    query_features = np.array(query_features) / np.linalg.norm(query_features, axis=1, keepdims=True)
+                
+                nbrs = NearestNeighbors(n_neighbors=1, metric=distance_measure)
+                nbrs.fit(gallery_features)
+                
+                # Find nearest neighbor for each query sample
+                _, indices = nbrs.kneighbors(query_features)
+                
+                for j, idx_list in enumerate(indices):
+                    predicted_moas.append(gallery_moas[idx_list[0]])
+                    actual_moas.append(query_moas[j])
+
             # Create confusion matrix
             cm = confusion_matrix(actual_moas, predicted_moas, labels=unique_moas)
             
             # Plot
-            ax = axes[i]
             sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
                        xticklabels=unique_moas, yticklabels=unique_moas,
                        ax=ax, cbar=i == n_models - 1)  # Only show colorbar for last plot
@@ -179,13 +233,11 @@ def plot_confusion_matrices(model_names, data_root="/scratch/cv-course2025/group
             ax.set_xlabel('Predicted MoA')
             ax.set_ylabel('Actual MoA')
             
-            # Rotate labels for better readability
             ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
             ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
             
         except Exception as e:
             print(f"Error creating confusion matrix for {model_name}: {e}")
-            ax = axes[i]
             ax.text(0.5, 0.5, f'Error: {str(e)}', transform=ax.transAxes, 
                    ha='center', va='center', fontsize=12)
             ax.set_title(f'{model_name} - Error')

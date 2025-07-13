@@ -26,8 +26,10 @@ class TypicalVariationNormalizer:
         """
         Fits the PCA model on the given DMSO feature set, storing the mean and components.
         """
+        n_samples, n_features = dmso_features.shape
+        n_components = min(n_samples, n_features)
+        pca = PCA(n_components=n_components, whiten=self.whiten)
         # Convert to numpy for sklearn PCA
-        pca = PCA(n_components=dmso_features.shape[1], whiten=self.whiten)
         pca.fit(dmso_features.cpu().numpy())
         self.mean_ = torch.tensor(pca.mean_, dtype=torch.float32)
         self.components_ = torch.tensor(pca.components_, dtype=torch.float32)

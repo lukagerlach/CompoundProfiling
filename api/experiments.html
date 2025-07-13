@@ -393,12 +393,16 @@ document.write(`
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-experiments.tvn">Typical Variation Normalizer</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#experiments.tvn.TypicalVariationNormalizer"><code class="docutils literal notranslate"><span class="pre">TypicalVariationNormalizer</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#experiments.tvn.TypicalVariationNormalizer.mean_"><code class="docutils literal notranslate"><span class="pre">TypicalVariationNormalizer.mean_</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#experiments.tvn.TypicalVariationNormalizer.components_"><code class="docutils literal notranslate"><span class="pre">TypicalVariationNormalizer.components_</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#experiments.tvn.TypicalVariationNormalizer.whiten"><code class="docutils literal notranslate"><span class="pre">TypicalVariationNormalizer.whiten</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#experiments.tvn.TypicalVariationNormalizer.eps"><code class="docutils literal notranslate"><span class="pre">TypicalVariationNormalizer.eps</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#experiments.tvn.TypicalVariationNormalizer.__init__"><code class="docutils literal notranslate"><span class="pre">TypicalVariationNormalizer.__init__()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#experiments.tvn.TypicalVariationNormalizer.fit"><code class="docutils literal notranslate"><span class="pre">TypicalVariationNormalizer.fit()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#experiments.tvn.TypicalVariationNormalizer.transform"><code class="docutils literal notranslate"><span class="pre">TypicalVariationNormalizer.transform()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#experiments.tvn.TypicalVariationNormalizer.fit_transform"><code class="docutils literal notranslate"><span class="pre">TypicalVariationNormalizer.fit_transform()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#experiments.tvn.correct_tvn"><code class="docutils literal notranslate"><span class="pre">correct_tvn()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -420,6 +424,54 @@ document.write(`
 <dt class="sig sig-object py" id="experiments.tvn.TypicalVariationNormalizer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">experiments.tvn.</span></span><span class="sig-name descname"><span class="pre">TypicalVariationNormalizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-08</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/experiments/tvn.html#TypicalVariationNormalizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#experiments.tvn.TypicalVariationNormalizer" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Implements Typical Variation Normalization (TVN) as a preprocessing step for feature vectors.</p>
+<p>TVN is commonly used in bioimage analysis to reduce batch effects and normalize
+features relative to a control group (typically DMSO-treated images). It uses PCA
+to capture dominant variation modes and whitens the features.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="experiments.tvn.TypicalVariationNormalizer.mean_">
+<span class="sig-name descname"><span class="pre">mean_</span></span><a class="headerlink" href="#experiments.tvn.TypicalVariationNormalizer.mean_" title="Link to this definition">#</a></dt>
+<dd><p>Mean vector of the DMSO features computed during PCA fitting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.7)">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="experiments.tvn.TypicalVariationNormalizer.components_">
+<span class="sig-name descname"><span class="pre">components_</span></span><a class="headerlink" href="#experiments.tvn.TypicalVariationNormalizer.components_" title="Link to this definition">#</a></dt>
+<dd><p>Principal components (eigenvectors) from PCA.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.7)">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="experiments.tvn.TypicalVariationNormalizer.whiten">
+<span class="sig-name descname"><span class="pre">whiten</span></span><a class="headerlink" href="#experiments.tvn.TypicalVariationNormalizer.whiten" title="Link to this definition">#</a></dt>
+<dd><p>If True, uses PCA whitening during fitting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="experiments.tvn.TypicalVariationNormalizer.eps">
+<span class="sig-name descname"><span class="pre">eps</span></span><a class="headerlink" href="#experiments.tvn.TypicalVariationNormalizer.eps" title="Link to this definition">#</a></dt>
+<dd><p>Small epsilon value to ensure numerical stability.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="experiments.tvn.TypicalVariationNormalizer.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-08</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/experiments/tvn.html#TypicalVariationNormalizer.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#experiments.tvn.TypicalVariationNormalizer.__init__" title="Link to this definition">#</a></dt>
@@ -428,21 +480,22 @@ document.write(`
 <dl class="py method">
 <dt class="sig sig-object py" id="experiments.tvn.TypicalVariationNormalizer.fit">
 <span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dmso_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.7)"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/experiments/tvn.html#TypicalVariationNormalizer.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#experiments.tvn.TypicalVariationNormalizer.fit" title="Link to this definition">#</a></dt>
-<dd><p>Fit PCA to the DMSO (negative control) embeddings.</p>
+<dd><p>Fits the PCA model on the given DMSO feature set, storing the mean and components.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="experiments.tvn.TypicalVariationNormalizer.transform">
 <span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.7)"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.7)"><span class="pre">Tensor</span></a></span></span><a class="reference internal" href="../_modules/experiments/tvn.html#TypicalVariationNormalizer.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#experiments.tvn.TypicalVariationNormalizer.transform" title="Link to this definition">#</a></dt>
-<dd><p>Apply the TVN transform to the given features.</p>
+<dd><p>Applies TVN to a set of input features using the fitted PCA model, returning the
+whitened and decorrelated features.</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="experiments.tvn.TypicalVariationNormalizer.fit_transform">
-<span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dmso_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.7)"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.7)"><span class="pre">Tensor</span></a></span></span><a class="reference internal" href="../_modules/experiments/tvn.html#TypicalVariationNormalizer.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#experiments.tvn.TypicalVariationNormalizer.fit_transform" title="Link to this definition">#</a></dt>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="experiments.tvn.correct_tvn">
+<span class="sig-prename descclassname"><span class="pre">experiments.tvn.</span></span><span class="sig-name descname"><span class="pre">correct_tvn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features_DMSO</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features_all</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/experiments/tvn.html#correct_tvn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#experiments.tvn.correct_tvn" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
-
-</dd></dl>
 
 </section>
 </section>
@@ -494,12 +547,16 @@ document.write(`
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-experiments.tvn">Typical Variation Normalizer</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#experiments.tvn.TypicalVariationNormalizer"><code class="docutils literal notranslate"><span class="pre">TypicalVariationNormalizer</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#experiments.tvn.TypicalVariationNormalizer.mean_"><code class="docutils literal notranslate"><span class="pre">TypicalVariationNormalizer.mean_</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#experiments.tvn.TypicalVariationNormalizer.components_"><code class="docutils literal notranslate"><span class="pre">TypicalVariationNormalizer.components_</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#experiments.tvn.TypicalVariationNormalizer.whiten"><code class="docutils literal notranslate"><span class="pre">TypicalVariationNormalizer.whiten</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#experiments.tvn.TypicalVariationNormalizer.eps"><code class="docutils literal notranslate"><span class="pre">TypicalVariationNormalizer.eps</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#experiments.tvn.TypicalVariationNormalizer.__init__"><code class="docutils literal notranslate"><span class="pre">TypicalVariationNormalizer.__init__()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#experiments.tvn.TypicalVariationNormalizer.fit"><code class="docutils literal notranslate"><span class="pre">TypicalVariationNormalizer.fit()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#experiments.tvn.TypicalVariationNormalizer.transform"><code class="docutils literal notranslate"><span class="pre">TypicalVariationNormalizer.transform()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#experiments.tvn.TypicalVariationNormalizer.fit_transform"><code class="docutils literal notranslate"><span class="pre">TypicalVariationNormalizer.fit_transform()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#experiments.tvn.correct_tvn"><code class="docutils literal notranslate"><span class="pre">correct_tvn()</span></code></a></li>
 </ul>
 </li>
 </ul>

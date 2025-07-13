@@ -333,6 +333,7 @@ document.write(`
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dataset</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchvision</span><span class="w"> </span><span class="kn">import</span> <span class="n">transforms</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">models.load_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_pretrained_model</span><span class="p">,</span> <span class="n">ModelName</span>
 
 <div class="viewcode-block" id="BBBC021WeakLabelDataset">
@@ -355,58 +356,135 @@ document.write(`
 <span class="sd">            bbbc021: An instance of pybbbc.BBBC021</span>
 <span class="sd">            transform: A torchvision transform to apply to each image</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1">#self.bbbc021 = bbbc021</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bbbc021</span> <span class="o">=</span> <span class="n">bbbc021</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="n">transform</span>
 
         <span class="c1"># Filter out samples with unknown MoA</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">valid_samples</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="c1"># self.valid_samples = [</span>
             <span class="c1"># (img, self.compound_to_idx[m[1][0]])</span>
             <span class="c1"># for img, m in bbbc021 if m[1][2] != &#39;null&#39;</span>
-            <span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span> <span class="k">for</span> <span class="n">img</span><span class="p">,</span> <span class="n">metadata</span> <span class="ow">in</span> <span class="n">bbbc021</span>
-            <span class="k">if</span> <span class="n">metadata</span><span class="o">.</span><span class="n">compound</span><span class="o">.</span><span class="n">moa</span> <span class="o">!=</span> <span class="s1">&#39;null&#39;</span>
+            <span class="c1">#(img, metadata) for img, metadata in bbbc021</span>
+            <span class="c1">#if metadata.compound.moa != &#39;null&#39;</span>
+        <span class="c1">#]</span>
+
+        <span class="c1"># Create Compound → index mapping</span>
+        <span class="c1">#self.compound_to_idx = {</span>
+        <span class="c1">#    compound: idx for idx, compound in enumerate(sorted(set(</span>
+                <span class="c1"># m[1][0] for _, m in bbbc021 if m[1][2] != &#39;null&#39;  # skip unknown MoAs</span>
+        <span class="c1">#        meta.compound.compound for _, meta in self.valid_samples</span>
+        <span class="c1">#    )))</span>
+        <span class="c1">#}</span>
+        <span class="c1"># Store only indices for samples with valid MoA</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">valid_indices</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">meta</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bbbc021</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">meta</span><span class="o">.</span><span class="n">compound</span><span class="o">.</span><span class="n">moa</span> <span class="o">!=</span> <span class="s1">&#39;null&#39;</span>
         <span class="p">]</span>
 
-                <span class="c1"># Create Compound → index mapping</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">compound_to_idx</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">compound</span><span class="p">:</span> <span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">compound</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span>
-                <span class="c1"># m[1][0] for _, m in bbbc021 if m[1][2] != &#39;null&#39;  # skip unknown MoAs</span>
-                <span class="n">meta</span><span class="o">.</span><span class="n">compound</span><span class="o">.</span><span class="n">compound</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">meta</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_samples</span>
+                <span class="n">bbbc021</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">compound</span><span class="o">.</span><span class="n">compound</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_indices</span>
             <span class="p">)))</span>
         <span class="p">}</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">valid_samples</span><span class="p">)</span>
+        <span class="c1">#return len(self.valid_samples)</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">valid_indices</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
         <span class="c1">#img, weak_label = self.valid_samples[idx]</span>
         <span class="c1">#moa = self.bbbc021[idx][1][2]  # access full meta for eval</span>
-        <span class="n">img</span><span class="p">,</span> <span class="n">meta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_samples</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="c1">#img, meta = self.valid_samples[idx]</span>
+        <span class="c1">#compound_id = meta.compound.compound</span>
+        <span class="c1">#weak_label = self.compound_to_idx[compound_id]</span>
+        <span class="c1">#moa = meta.compound.moa</span>
+        <span class="c1">#if self.transform:</span>
+        <span class="c1">#    img = self.transform(img)</span>
+        <span class="c1">#return img, weak_label, moa</span>
+        <span class="n">actual_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_indices</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="n">img</span><span class="p">,</span> <span class="n">meta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bbbc021</span><span class="p">[</span><span class="n">actual_idx</span><span class="p">]</span>
+
+        <span class="c1"># Ensure image is a PyTorch tensor</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">img</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">img</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+
         <span class="n">compound_id</span> <span class="o">=</span> <span class="n">meta</span><span class="o">.</span><span class="n">compound</span><span class="o">.</span><span class="n">compound</span>
         <span class="n">weak_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compound_to_idx</span><span class="p">[</span><span class="n">compound_id</span><span class="p">]</span>
         <span class="n">moa</span> <span class="o">=</span> <span class="n">meta</span><span class="o">.</span><span class="n">compound</span><span class="o">.</span><span class="n">moa</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">:</span>
             <span class="n">img</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">img</span><span class="p">,</span> <span class="n">weak_label</span><span class="p">,</span> <span class="n">moa</span></div>
+
+
+<div class="viewcode-block" id="DINOProjectionHead">
+<a class="viewcode-back" href="../../api/models.html#models.wsdino_resnet.DINOProjectionHead">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DINOProjectionHead</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    DINO-style Projection Head for Self-Supervised Learning.</span>
+
+<span class="sd">    This module implements a 3-layer MLP with:</span>
+<span class="sd">        - Two hidden layers of size 2048 with GELU activations</span>
+<span class="sd">        - An output layer of configurable dimension (default: 256) without activation</span>
+<span class="sd">        - L2 normalization applied to the output</span>
+<span class="sd">        - A weight-normalized linear layer as the final projection</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        in_dim (int): Input feature dimension (e.g., 2048 for ResNet-50).</span>
+<span class="sd">        hidden_dim (int): Hidden layer dimension (default: 2048).</span>
+<span class="sd">        proj_dim (int): Output projection dimension (default: 256).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="DINOProjectionHead.__init__">
+<a class="viewcode-back" href="../../api/models.html#models.wsdino_resnet.DINOProjectionHead.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_dim</span><span class="p">,</span> <span class="n">proj_dim</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="o">=</span><span class="mi">2048</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mlp</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_dim</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">GELU</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_dim</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">GELU</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_dim</span><span class="p">,</span> <span class="n">proj_dim</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="c1"># Optional weight-normed layer (as in DINO paper)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_layer</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">weight_norm</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">proj_dim</span><span class="p">,</span> <span class="n">proj_dim</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span></div>
+
+    
+<div class="viewcode-block" id="DINOProjectionHead.forward">
+<a class="viewcode-back" href="../../api/models.html#models.wsdino_resnet.DINOProjectionHead.forward">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mlp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># L2 normalization</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_layer</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+</div>
 
 
 <div class="viewcode-block" id="get_resnet50">
 <a class="viewcode-back" href="../../api/models.html#models.wsdino_resnet.get_resnet50">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_resnet50</span><span class="p">(</span><span class="n">num_classes</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;base_resnet&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_resnet50</span><span class="p">(</span><span class="n">num_classes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_projection_head</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">proj_dim</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;base_resnet&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Loads a ResNet-50 backbone with the final layer replaced for classification.</span>
+<span class="sd">    Optionally adds a DINO-style projection head.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        num_classes: Number of output classes (e.g., number of unique MoAs)</span>
+<span class="sd">        num_classes: Number of output classes (e.g., number of unique MoAs, used only if projection head is False)</span>
+<span class="sd">        use_projection_head: If True, attach DINO-style projection head</span>
+<span class="sd">        proj_dim: Output dimension of projection head</span>
 <span class="sd">        model_type: should be &quot;base_resnet&quot; or &quot;wsdino&quot;</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A torch.nn.Module (ResNet-50 with custom head)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">load_pretrained_model</span><span class="p">(</span><span class="n">model_type</span><span class="p">)</span>
-    <span class="n">in_feats</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fc</span><span class="o">.</span><span class="n">in_features</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">fc</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_feats</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">model</span></div>
+    <span class="n">backbone</span> <span class="o">=</span> <span class="n">load_pretrained_model</span><span class="p">(</span><span class="n">model_type</span><span class="p">)</span>
+    <span class="n">in_dim</span> <span class="o">=</span> <span class="n">backbone</span><span class="o">.</span><span class="n">fc</span><span class="o">.</span><span class="n">in_features</span>
+
+    <span class="k">if</span> <span class="n">use_projection_head</span><span class="p">:</span>
+        <span class="n">backbone</span><span class="o">.</span><span class="n">fc</span> <span class="o">=</span> <span class="n">DINOProjectionHead</span><span class="p">(</span><span class="n">in_dim</span><span class="p">,</span> <span class="n">proj_dim</span><span class="o">=</span><span class="n">proj_dim</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">num_classes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;You must provide num_classes if not using projection head&quot;</span>
+        <span class="n">backbone</span><span class="o">.</span><span class="n">fc</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_dim</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">backbone</span></div>
 
 
 <div class="viewcode-block" id="dino_loss">

@@ -3,7 +3,6 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 import torchvision.transforms as T
 import os
-from tqdm import tqdm
 from pybbbc import BBBC021
 from models.wsdino_resnet import (
     BBBC021WeakLabelDataset,
@@ -37,22 +36,23 @@ def train_wsdino(
     """
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Device: {device}")
+
+    # Use DataParallel for multi-GPU training
+    num_gpus = torch.cuda.device_count()
+    print(f"Using {num_gpus} GPUs for training")
 
     # Load data
     bbbc = BBBC021(root_path=os.path.join(root_path, "bbbc021"))
+
     transform = T.Compose([
         T.Resize((224, 224)),
-        T.ToTensor(),
-        # T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
 
     # Create dataset and dataloader
     dataset = BBBC021WeakLabelDataset(bbbc, transform=transform)
 
-    # Use DataParallel for multi-GPU training
-    num_gpus = torch.cuda.device_count()
-    print(f"Using {num_gpus} GPUs for training")
-    
     dataloader = DataLoader(
         dataset, 
         batch_size=batch_size, 
@@ -69,8 +69,8 @@ def train_wsdino(
     teacher = get_resnet50(num_classes=num_compounds)
 
     # get weights from file
-    # student = get_resnet50(num_classes=num_compounds, model_type="wsdino")
-    # teacher = get_resnet50(num_classes=num_compounds, model_type="wsdino")
+    #student = get_resnet50(num_classes=num_compounds, model_type="wsdino")
+    #teacher = get_resnet50(num_classes=num_compounds, model_type="wsdino")
 
     # Use DataParallel for multi-GPU training
     if num_gpus > 1:
@@ -125,7 +125,7 @@ def train_wsdino(
             print(f"Model saved to {save_path}")
 
     # Save model
-    torch.save(student.state_dict(), os.path.join(save_dir, "model_weights", "resnet50_wsdino.pth"))
+    torch.save(student.state_dict(), os.path.join(save_dir, "resnet50_wsdino.pth"))
     print("Model saved to resnet50_wsdino.pth")
 
 if __name__ == "__main__":
@@ -135,6 +135,6 @@ if __name__ == "__main__":
         batch_size=512,
         lr=0.0003,
         momentum = 0.996,
-        projection_dim=128,
+        #projection_dim=128,
         save_every=50
     )

@@ -6,6 +6,7 @@ import os
 from pybbbc import BBBC021
 from models.wsdino_resnet import (
     BBBC021WeakLabelDataset,
+    MultiCropTransform,
     get_resnet50,
     dino_loss,
     update_teacher
@@ -18,7 +19,7 @@ def train_wsdino(
     lr=0.0003,
     momentum = 0.996,
     temperature=0.1,
-    # projection_dim=128,
+    proj_dim=128,
     save_every=50
 ):
     """
@@ -43,34 +44,54 @@ def train_wsdino(
     print(f"Using {num_gpus} GPUs for training")
 
     # Load data
-    bbbc = BBBC021(root_path=os.path.join(root_path, "bbbc021"))
+    #bbbc = BBBC021(root_path=os.path.join(root_path, "bbbc021"))
+    bbbc = BBBC021(root_path)
+    print("loaded data")
 
-    transform = T.Compose([
-        T.Resize((224, 224)),
-        T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    global_transform = T.Compose([
+        T.RandomResizedCrop(224, scale=(0.4, 1.0)),
+        T.RandomHorizontalFlip(),
+        T.ColorJitter(0.4, 0.4, 0.4, 0.1),
+        #T.ToTensor(),
+        #T.Resize((224, 224)),
+        T.Normalize(mean=[0.485]*3, std=[0.229]*3)
     ])
+
+    local_transform = T.Compose([
+        T.RandomResizedCrop(96, scale=(0.05, 0.4)),
+        T.RandomHorizontalFlip(),
+        T.ColorJitter(0.4, 0.4, 0.4, 0.1),
+        T.Normalize(mean=[0.485]*3, std=[0.229]*3)
+    ])
+
+    # Combine into a multi-crop transform
+    transform = MultiCropTransform(global_transform, local_transform, num_local_crops=6)
 
     # Create dataset and dataloader
     dataset = BBBC021WeakLabelDataset(bbbc, transform=transform)
-
+    print("made dataset")
+    
     dataloader = DataLoader(
         dataset, 
         batch_size=batch_size, 
         shuffle=True, 
-        num_workers=min(16, os.cpu_count()),
+        num_workers=min(10, os.cpu_count()),
         pin_memory=True,
         drop_last=True
     )
+    print("dataloader created")
 
     num_compounds = len(dataset.compound_to_idx)
 
     # Create models
-    student = get_resnet50(num_classes=num_compounds)
-    teacher = get_resnet50(num_classes=num_compounds)
+    student = get_resnet50(num_classes=num_compounds, proj_dim=proj_dim, model_type="base_resnet")
+    print("student initialized")
+    teacher = get_resnet50(num_classes=num_compounds, proj_dim=proj_dim, model_type="base_resnet")
+    print("teacher initialized")
 
     # get weights from file
-    #student = get_resnet50(num_classes=num_compounds, model_type="wsdino")
-    #teacher = get_resnet50(num_classes=num_compounds, model_type="wsdino")
+    #student = get_resnet50(num_classes=num_compounds, proj_dim=proj_dim, model_type="wsdino")
+    #teacher = get_resnet50(num_classes=num_compounds, proj_dim=proj_dim, model_type="wsdino")
 
     # Use DataParallel for multi-GPU training
     if num_gpus > 1:
@@ -84,31 +105,48 @@ def train_wsdino(
         p.requires_grad = False
 
     # Optimizer
-    optimizer = torch.optim.Adam(student.parameters(), lr=lr)
-    # weight_decay=0.05, betas=(0.9, 0.999)
+    #optimizer = torch.optim.Adam(student.parameters(), lr=lr)
+
+    optimizer = torch.optim.AdamW(
+        student.parameters(),
+        lr=lr,
+        weight_decay=0.05,
+        betas=(0.9, 0.999)
+    )
 
     # Create save directory
     save_dir = os.path.join(root_path, "model_weights")
     os.makedirs(save_dir, exist_ok=True)
 
+    print("starting training loop")
     # Training loop
     for epoch in range(epochs):
         student.train()
         total_loss = 0
-        for images, _, _ in dataloader:  # ignore weak_label and moa
-            images = images.to(device)
+        for crops, _, _ in dataloader:
+            # crops: list of views per image, batch size N
+            crops = [crop.to(device, non_blocking=True) for crop in crops]
 
-            student_out = student(images)
+            student_out = [student(view) for view in crops]
+
             with torch.no_grad():
-                teacher_out = teacher(images)
+                teacher_out = [teacher(crops[0]), teacher(crops[1])]
 
-            loss = dino_loss(student_out, teacher_out, temp=temperature)
+            # Compute DINO loss
+            loss = 0
+            for t_out in teacher_out:
+                t_out = t_out.detach()
+                for s_out in student_out:
+                    loss += dino_loss(s_out, t_out, temp=0.07)
+            loss /= (len(teacher_out) * len(student_out))
 
+            # Backward & optimize
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 
-            update_teacher(student, teacher, m=momentum)
+            # Update teacher
+            update_teacher(student, teacher, m=0.996)
 
             total_loss += loss.item()
 
@@ -116,13 +154,15 @@ def train_wsdino(
         print(f"Epoch {epoch+1}/{epochs}, Loss: {avg_loss:.4f}")
 
         # Save model every save_every epochs
-        if (epoch + 1) % save_every == 0:
+        if (epoch + 1) % save_every == 0 or epoch == 1:
             model_to_save = student.module if isinstance(student, nn.DataParallel) else student
             backbone_state = model_to_save.state_dict()
 
             save_path = os.path.join(save_dir, f"resnet50_wsdino_epoch_{epoch+1}.pth")
             torch.save(backbone_state, save_path)
             print(f"Model saved to {save_path}")
+
+        torch.cuda.empty_cache()
 
     # Save model
     torch.save(student.state_dict(), os.path.join(save_dir, "resnet50_wsdino.pth"))
@@ -131,10 +171,10 @@ def train_wsdino(
 if __name__ == "__main__":
     train_wsdino(
         root_path="/scratch/cv-course2025/group8",
-        epochs=200,
-        batch_size=512,
+        epochs=300,
+        batch_size=256,
         lr=0.0003,
-        momentum = 0.996,
-        #projection_dim=128,
+        momentum = 0.99,
+        proj_dim=256,
         save_every=50
     )

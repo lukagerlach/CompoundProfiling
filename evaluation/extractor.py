@@ -9,7 +9,7 @@ import os
 
 from models.load_model import load_pretrained_model, create_feature_extractor, ModelName
 from pybbbc import BBBC021, constants
-from experiments.tvn import TypicalVariationNormalizer # Import TVN module
+from experiments.tvn import TypicalVariationNormalizer  # Import TVN module
 
 def extract_moa_features(
         model_name: ModelName, 
@@ -134,13 +134,13 @@ def extract_moa_features(
         if not tvn_features:
             raise RuntimeError("No DMSO features found to fit TVN.")
         dmso_concat = torch.cat(tvn_features, dim=0)
-        tvn_model = TypicalVariationNormalizer()
-        tvn_model.fit(dmso_concat)
+        tvn = TypicalVariationNormalizer()
+        tvn.fit(dmso_concat)
 
-        print("Applying TVN to each per-image feature, then averaging...")
+        print("Applying TVN and saving averaged features...")
         for key, features in compound_features.items():
-            transformed_features = tvn_model.transform(features)
-            avg_feature = transformed_features.mean(dim=0)
+            transformed = tvn.transform(features)
+            avg_feature = torch.mean(transformed, dim=0)
             result = (key, avg_feature)
             compound_name, concentration, _ = key
             filename = f"{compound_name}_{concentration}.pkl".replace(" ", "_").replace("/", "_")
@@ -167,8 +167,8 @@ if __name__ == "__main__":
         model_name="simclr", 
         # model_name="wsdino",
         device=torch.device("cuda" if torch.cuda.is_available() else "cpu"),
-        batch_size=128,
+        batch_size=256,
         data_root="/scratch/cv-course2025/group8",
         compounds=constants.COMPOUNDS,
-        tvn=True
+        tvn=False
     )

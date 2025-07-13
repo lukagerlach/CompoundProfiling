@@ -42,16 +42,3 @@ class TypicalVariationNormalizer:
         x_centered = features - self.mean_.to(features.device)
         x_transformed = torch.matmul(x_centered, self.components_.T.to(features.device))
         return x_transformed
-
-# not needed when using tvn in the extractor
-def correct_tvn(features_DMSO, features_all):
-    # Strip metadata columns if included
-    labels = features_all[:, -6:]  # last 6 are metadata
-    features_all_core = features_all[:, :-6]
-
-    # Fit PCA on full DMSO features (no labels assumed)
-    p = PCA(n_components=384, whiten=True)
-    p.fit(features_DMSO)
-
-    features_all_tvn = p.transform(features_all_core)
-    return np.concatenate([features_all_tvn, labels], axis=1)

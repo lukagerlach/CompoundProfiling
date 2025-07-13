@@ -25,21 +25,6 @@ class BBBC021WeakLabelDataset(Dataset):
         self.bbbc021 = bbbc021
         self.transform = transform
 
-        # Filter out samples with unknown MoA
-        # self.valid_samples = [
-            # (img, self.compound_to_idx[m[1][0]])
-            # for img, m in bbbc021 if m[1][2] != 'null'
-            #(img, metadata) for img, metadata in bbbc021
-            #if metadata.compound.moa != 'null'
-        #]
-
-        # Create Compound → index mapping
-        #self.compound_to_idx = {
-        #    compound: idx for idx, compound in enumerate(sorted(set(
-                # m[1][0] for _, m in bbbc021 if m[1][2] != 'null'  # skip unknown MoAs
-        #        meta.compound.compound for _, meta in self.valid_samples
-        #    )))
-        #}
         # Store only indices for samples with valid MoA
         self.valid_indices = [
             i for i, (_, meta) in enumerate(bbbc021)
@@ -57,19 +42,9 @@ class BBBC021WeakLabelDataset(Dataset):
         return len(self.valid_indices)
 
     def __getitem__(self, idx):
-        #img, weak_label = self.valid_samples[idx]
-        #moa = self.bbbc021[idx][1][2]  # access full meta for eval
-        #img, meta = self.valid_samples[idx]
-        #compound_id = meta.compound.compound
-        #weak_label = self.compound_to_idx[compound_id]
-        #moa = meta.compound.moa
-        #if self.transform:
-        #    img = self.transform(img)
-        #return img, weak_label, moa
         actual_idx = self.valid_indices[idx]
         img, meta = self.bbbc021[actual_idx]
 
-        # Ensure image is a PyTorch tensor
         if isinstance(img, np.ndarray):
             img = torch.from_numpy(img).float()
 
@@ -78,9 +53,11 @@ class BBBC021WeakLabelDataset(Dataset):
         moa = meta.compound.moa
 
         if self.transform:
-            img = self.transform(img)
+            crops = self.transform(img)  # List of tensors
+        else:
+            crops = [img]
 
-        return img, weak_label, moa
+        return crops, weak_label, moa
 
 class DINOProjectionHead(nn.Module):
     """
@@ -169,3 +146,17 @@ def update_teacher(student, teacher, m=0.996):
     """
     for ps, pt in zip(student.parameters(), teacher.parameters()):
         pt.data = pt.data * m + ps.data * (1. - m)
+
+class MultiCropTransform:
+    """
+    Generate 2 global crops and N local crops from the same image.
+    """
+    def __init__(self, global_transform, local_transform, num_local_crops):
+        self.global_transform = global_transform
+        self.local_transform = local_transform
+        self.num_local_crops = num_local_crops
+
+    def __call__(self, x):
+        crops = [self.global_transform(x) for _ in range(2)]
+        crops += [self.local_transform(x) for _ in range(self.num_local_crops)]
+        return crops

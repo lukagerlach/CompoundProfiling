@@ -161,6 +161,7 @@ def evaluate_model(model_name: ModelName, distance_measure: DistanceMeasure = "c
 
 if __name__ == "__main__":
     model_name = "simclr"
+    # model_name = "wsdino"
     
     # Evaluate model
     results = evaluate_model(model_name, distance_measure="cosine", nsc_eval=True, tvn=False)

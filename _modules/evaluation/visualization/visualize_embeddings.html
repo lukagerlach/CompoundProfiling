@@ -724,9 +724,14 @@ document.write(`
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="c1"># Example: Compare multiple models</span>
-    <span class="n">model_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;base_resnet&quot;</span><span class="p">,</span> <span class="s2">&quot;simclr_vanilla_ws&quot;</span><span class="p">]</span>
+    <span class="c1">#model_names = [&quot;base_resnet&quot;, &quot;simclr_vanilla_ws&quot;]</span>
+    <span class="n">model_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;base_resnet&quot;</span><span class="p">,</span> <span class="s2">&quot;wsdino&quot;</span><span class="p">]</span>
     
-    <span class="n">plot_accuracy_vs_image_count</span><span class="p">(</span><span class="n">model_names</span><span class="p">,</span> <span class="n">sort_by</span><span class="o">=</span><span class="s2">&quot;image_count&quot;</span><span class="p">,</span> <span class="n">max_image_count</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">output_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;/scratch/cv-course2025/group8/plots&quot;</span><span class="p">,</span> <span class="s2">&quot;wsdino&quot;</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">plot_accuracy_vs_image_count</span><span class="p">(</span><span class="n">model_names</span><span class="p">,</span> <span class="n">sort_by</span><span class="o">=</span><span class="s2">&quot;image_count&quot;</span><span class="p">,</span> <span class="n">max_image_count</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">output_dir</span><span class="p">)</span>
+    <span class="n">plot_umap_comparison</span><span class="p">(</span><span class="n">model_names</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">output_dir</span><span class="p">)</span>
+    <span class="n">plot_tsne_comparison</span><span class="p">(</span><span class="n">model_names</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">output_dir</span><span class="p">)</span>
 </pre></div>
 
                 </article>

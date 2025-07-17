@@ -340,7 +340,7 @@ document.write(`
 
 <span class="sd">    TVN is commonly used in bioimage analysis to reduce batch effects and normalize </span>
 <span class="sd">    features relative to a control group (typically DMSO-treated images). It uses PCA </span>
-<span class="sd">    to capture dominant variation modes and whitens the features.</span>
+<span class="sd">    to capture dominant variation modes.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        mean_ (torch.Tensor): Mean vector of the DMSO features computed during PCA fitting.</span>
@@ -353,7 +353,7 @@ document.write(`
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">components_</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">whiten</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">whiten</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">eps</span> <span class="o">=</span> <span class="n">eps</span></div>
 
 
@@ -376,8 +376,7 @@ document.write(`
 <a class="viewcode-back" href="../../api/experiments.html#experiments.tvn.TypicalVariationNormalizer.transform">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Applies TVN to a set of input features using the fitted PCA model, returning the </span>
-<span class="sd">        whitened and decorrelated features.</span>
+<span class="sd">        Applies TVN to a set of input features using the fitted PCA model, returning the decorrelated features.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">x_centered</span> <span class="o">=</span> <span class="n">features</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">features</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
         <span class="n">x_transformed</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">x_centered</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">components_</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">features</span><span class="o">.</span><span class="n">device</span><span class="p">))</span>

@@ -384,10 +384,6 @@ document.write(`
     <span class="n">output_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_root</span><span class="p">,</span> <span class="s2">&quot;bbbc021_features&quot;</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span>
     <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     
-    <span class="c1"># Create DMSO subfolder</span>
-    <span class="n">dmso_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s2">&quot;DMSO&quot;</span><span class="p">)</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dmso_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    
     <span class="c1"># Set device</span>
     <span class="n">feature_extractor</span> <span class="o">=</span> <span class="n">feature_extractor</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
     <span class="n">feature_extractor</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
@@ -462,6 +458,9 @@ document.write(`
 
     <span class="c1"># TVN logic</span>
     <span class="k">if</span> <span class="n">tvn</span><span class="p">:</span>
+        <span class="n">tvn_output_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_root</span><span class="p">,</span> <span class="s2">&quot;bbbc021_features&quot;</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="s2">&quot;tvn&quot;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">tvn_output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Fitting TVN from DMSO images...&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">tvn_features</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No DMSO features found to fit TVN.&quot;</span><span class="p">)</span>
@@ -475,8 +474,8 @@ document.write(`
             <span class="n">avg_feature</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">transformed</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">avg_feature</span><span class="p">)</span>
             <span class="n">compound_name</span><span class="p">,</span> <span class="n">concentration</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">key</span>
-            <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">compound_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">concentration</span><span class="si">}</span><span class="s2">.pkl&quot;</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>
-            <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">compound_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">concentration</span><span class="si">}</span><span class="s2">_tvn.pkl&quot;</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>
+            <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tvn_output_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saved averaged TVN features to </span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -503,7 +502,7 @@ document.write(`
         <span class="n">batch_size</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span>
         <span class="n">data_root</span><span class="o">=</span><span class="s2">&quot;/scratch/cv-course2025/group8&quot;</span><span class="p">,</span>
         <span class="n">compounds</span><span class="o">=</span><span class="n">constants</span><span class="o">.</span><span class="n">COMPOUNDS</span><span class="p">,</span>
-        <span class="n">tvn</span><span class="o">=</span><span class="kc">False</span>
+        <span class="n">tvn</span><span class="o">=</span><span class="kc">False</span> <span class="c1">#True</span>
     <span class="p">)</span>
 </pre></div>
 

@@ -450,13 +450,18 @@ document.write(`
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.DINOProjectionHead.forward"><code class="docutils literal notranslate"><span class="pre">DINOProjectionHead.forward()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.get_resnet50"><code class="docutils literal notranslate"><span class="pre">get_resnet50()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.dino_loss"><code class="docutils literal notranslate"><span class="pre">dino_loss()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.update_teacher"><code class="docutils literal notranslate"><span class="pre">update_teacher()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.SimpleDINOLoss"><code class="docutils literal notranslate"><span class="pre">SimpleDINOLoss</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.SimpleDINOLoss.__init__"><code class="docutils literal notranslate"><span class="pre">SimpleDINOLoss.__init__()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.SimpleDINOLoss.forward"><code class="docutils literal notranslate"><span class="pre">SimpleDINOLoss.forward()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.SimpleDINOLoss.update_center"><code class="docutils literal notranslate"><span class="pre">SimpleDINOLoss.update_center()</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.MultiCropTransform"><code class="docutils literal notranslate"><span class="pre">MultiCropTransform</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.MultiCropTransform.__init__"><code class="docutils literal notranslate"><span class="pre">MultiCropTransform.__init__()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.get_resnet50"><code class="docutils literal notranslate"><span class="pre">get_resnet50()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.update_teacher"><code class="docutils literal notranslate"><span class="pre">update_teacher()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -835,6 +840,55 @@ registered hooks while the latter silently ignores them.</p>
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="models.wsdino_resnet.SimpleDINOLoss">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.wsdino_resnet.</span></span><span class="sig-name descname"><span class="pre">SimpleDINOLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncrops</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">student_temp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">teacher_temp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.04</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_momentum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/wsdino_resnet.html#SimpleDINOLoss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.wsdino_resnet.SimpleDINOLoss" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a></p>
+<p>DINO Loss: Self-distillation with no labels.</p>
+<p>This version uses a constant teacher temperature (default: 0.04) and no temperature warmup.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="models.wsdino_resnet.SimpleDINOLoss.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncrops</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">student_temp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">teacher_temp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.04</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_momentum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/wsdino_resnet.html#SimpleDINOLoss.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.wsdino_resnet.SimpleDINOLoss.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.wsdino_resnet.SimpleDINOLoss.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">student_output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">teacher_output</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/wsdino_resnet.html#SimpleDINOLoss.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.wsdino_resnet.SimpleDINOLoss.forward" title="Link to this definition">#</a></dt>
+<dd><p>Computes the DINO cross-entropy loss between teacher and student outputs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>student_output</strong> (<em>Tensor</em>) – Shape (batch_size * ncrops, out_dim)</p></li>
+<li><p><strong>teacher_output</strong> (<em>Tensor</em>) – Shape (batch_size * 2, out_dim) — from 2 global views</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Scalar loss value (Tensor)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="models.wsdino_resnet.SimpleDINOLoss.update_center">
+<span class="sig-name descname"><span class="pre">update_center</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">teacher_output</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/wsdino_resnet.html#SimpleDINOLoss.update_center"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.wsdino_resnet.SimpleDINOLoss.update_center" title="Link to this definition">#</a></dt>
+<dd><p>Update the center used to normalize teacher outputs using EMA.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="models.wsdino_resnet.MultiCropTransform">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.wsdino_resnet.</span></span><span class="sig-name descname"><span class="pre">MultiCropTransform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">global_transform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_transform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_local_crops</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/wsdino_resnet.html#MultiCropTransform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.wsdino_resnet.MultiCropTransform" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Generate 2 global crops and N local crops from the same image.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="models.wsdino_resnet.MultiCropTransform.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">global_transform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_transform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_local_crops</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/wsdino_resnet.html#MultiCropTransform.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.wsdino_resnet.MultiCropTransform.__init__" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="models.wsdino_resnet.get_resnet50">
 <span class="sig-prename descclassname"><span class="pre">models.wsdino_resnet.</span></span><span class="sig-name descname"><span class="pre">get_resnet50</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_classes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_projection_head</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proj_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'base_resnet'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/wsdino_resnet.html#get_resnet50"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.wsdino_resnet.get_resnet50" title="Link to this definition">#</a></dt>
@@ -856,26 +910,8 @@ Optionally adds a DINO-style projection head.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="models.wsdino_resnet.dino_loss">
-<span class="sig-prename descclassname"><span class="pre">models.wsdino_resnet.</span></span><span class="sig-name descname"><span class="pre">dino_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">student_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">teacher_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.07</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/wsdino_resnet.html#dino_loss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.wsdino_resnet.dino_loss" title="Link to this definition">#</a></dt>
-<dd><p>Computes the DINO distillation loss between student and teacher outputs.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>student_out</strong> – Logits from the student network</p></li>
-<li><p><strong>teacher_out</strong> – Logits from the teacher network (detached)</p></li>
-<li><p><strong>temp</strong> – Temperature scaling parameter</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>KL divergence loss between student and teacher probability distributions</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="models.wsdino_resnet.update_teacher">
-<span class="sig-prename descclassname"><span class="pre">models.wsdino_resnet.</span></span><span class="sig-name descname"><span class="pre">update_teacher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">student</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">teacher</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.996</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/wsdino_resnet.html#update_teacher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.wsdino_resnet.update_teacher" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">models.wsdino_resnet.</span></span><span class="sig-name descname"><span class="pre">update_teacher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">student</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">teacher</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.99</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/wsdino_resnet.html#update_teacher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.wsdino_resnet.update_teacher" title="Link to this definition">#</a></dt>
 <dd><p>Updates teacher weights using exponential moving average of student weights.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -889,18 +925,6 @@ Optionally adds a DINO-style projection head.</p>
 <dd class="field-even"><p>None (teacher model is updated in place)</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="models.wsdino_resnet.MultiCropTransform">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">models.wsdino_resnet.</span></span><span class="sig-name descname"><span class="pre">MultiCropTransform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">global_transform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_transform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_local_crops</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/wsdino_resnet.html#MultiCropTransform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.wsdino_resnet.MultiCropTransform" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>Generate 2 global crops and N local crops from the same image.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="models.wsdino_resnet.MultiCropTransform.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">global_transform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_transform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_local_crops</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models/wsdino_resnet.html#MultiCropTransform.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.wsdino_resnet.MultiCropTransform.__init__" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 </section>
@@ -1010,13 +1034,18 @@ Optionally adds a DINO-style projection head.</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.DINOProjectionHead.forward"><code class="docutils literal notranslate"><span class="pre">DINOProjectionHead.forward()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.get_resnet50"><code class="docutils literal notranslate"><span class="pre">get_resnet50()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.dino_loss"><code class="docutils literal notranslate"><span class="pre">dino_loss()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.update_teacher"><code class="docutils literal notranslate"><span class="pre">update_teacher()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.SimpleDINOLoss"><code class="docutils literal notranslate"><span class="pre">SimpleDINOLoss</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.SimpleDINOLoss.__init__"><code class="docutils literal notranslate"><span class="pre">SimpleDINOLoss.__init__()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.SimpleDINOLoss.forward"><code class="docutils literal notranslate"><span class="pre">SimpleDINOLoss.forward()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.SimpleDINOLoss.update_center"><code class="docutils literal notranslate"><span class="pre">SimpleDINOLoss.update_center()</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.MultiCropTransform"><code class="docutils literal notranslate"><span class="pre">MultiCropTransform</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.MultiCropTransform.__init__"><code class="docutils literal notranslate"><span class="pre">MultiCropTransform.__init__()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.get_resnet50"><code class="docutils literal notranslate"><span class="pre">get_resnet50()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#models.wsdino_resnet.update_teacher"><code class="docutils literal notranslate"><span class="pre">update_teacher()</span></code></a></li>
 </ul>
 </li>
 </ul>

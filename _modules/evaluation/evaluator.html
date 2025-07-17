@@ -343,7 +343,11 @@ document.write(`
 
 <div class="viewcode-block" id="evaluate_model">
 <a class="viewcode-back" href="../../api/evaluation.html#evaluation.evaluator.evaluate_model">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">evaluate_model</span><span class="p">(</span><span class="n">model_name</span><span class="p">:</span> <span class="n">ModelName</span><span class="p">,</span> <span class="n">distance_measure</span><span class="p">:</span> <span class="n">DistanceMeasure</span> <span class="o">=</span> <span class="s2">&quot;cosine&quot;</span><span class="p">,</span> <span class="n">nsc_eval</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">tvn</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">evaluate_model</span><span class="p">(</span>
+        <span class="n">model_name</span><span class="p">:</span> <span class="n">ModelName</span><span class="p">,</span> 
+        <span class="n">distance_measure</span><span class="p">:</span> <span class="n">DistanceMeasure</span> <span class="o">=</span> <span class="s2">&quot;cosine&quot;</span><span class="p">,</span> 
+        <span class="n">nsc_eval</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> 
+        <span class="n">tvn</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Evaluate MOA prediction using 1-nearest neighbor with specified distance measure on pre-extracted features.</span>
 <span class="sd">    </span>
@@ -358,7 +362,10 @@ document.write(`
 <span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="c1"># Load pre-computed features</span>
-    <span class="n">features_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/scratch/cv-course2025/group8/bbbc021_features/</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">if</span> <span class="n">tvn</span><span class="p">:</span>
+        <span class="n">features_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/scratch/cv-course2025/group8/bbbc021_features/</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">/tvn&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">features_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/scratch/cv-course2025/group8/bbbc021_features/</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">&quot;</span>
     
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">features_dir</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Features directory not found: </span><span class="si">{</span><span class="n">features_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -381,9 +388,6 @@ document.write(`
     
     <span class="k">if</span> <span class="ow">not</span> <span class="n">stored_features_dict</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No valid feature files found&quot;</span><span class="p">)</span>
-    
-    <span class="c1"># if tvn:</span>
-        <span class="c1"># TODO: maybe add some logic to compare no TVN with TVN?</span>
     
     <span class="c1"># Track results</span>
     <span class="n">total_correct</span> <span class="o">=</span> <span class="mi">0</span>
@@ -493,8 +497,8 @@ document.write(`
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">model_name</span> <span class="o">=</span> <span class="s2">&quot;simclr&quot;</span>
-    <span class="c1"># model_name = &quot;wsdino&quot;</span>
+    <span class="c1">#model_name = &quot;simclr&quot;</span>
+    <span class="n">model_name</span> <span class="o">=</span> <span class="s2">&quot;wsdino&quot;</span>
     
     <span class="c1"># Evaluate model</span>
     <span class="n">results</span> <span class="o">=</span> <span class="n">evaluate_model</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">distance_measure</span><span class="o">=</span><span class="s2">&quot;cosine&quot;</span><span class="p">,</span> <span class="n">nsc_eval</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tvn</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>

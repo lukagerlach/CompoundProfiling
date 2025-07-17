@@ -407,7 +407,11 @@ def compare_all_models(model_names, data_root="/scratch/cv-course2025/group8", o
 
 if __name__ == "__main__":
     # Models to compare
-    model_names = ["base_resnet", "simclr_vanilla_ws"]
+    #model_names = ["base_resnet", "simclr_vanilla_ws"]
+    model_names = ["base_resnet", "wsdino"]
     
+    output_dir=os.path.join("/scratch/cv-course2025/group8/plots", "wsdino")
+    os.makedirs(output_dir, exist_ok=True)
     # Run all comparisons
-    compare_all_models(model_names)
+    #compare_all_models(model_names)
+    compare_all_models(model_names, output_dir=output_dir)

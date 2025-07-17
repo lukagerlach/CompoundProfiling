@@ -382,6 +382,11 @@ def plot_accuracy_vs_image_count(model_names, data_root="/scratch/cv-course2025/
 
 if __name__ == "__main__":
     # Example: Compare multiple models
-    model_names = ["base_resnet", "simclr_vanilla_ws"]
+    #model_names = ["base_resnet", "simclr_vanilla_ws"]
+    model_names = ["base_resnet", "wsdino"]
     
-    plot_accuracy_vs_image_count(model_names, sort_by="image_count", max_image_count=200)
+    output_dir=os.path.join("/scratch/cv-course2025/group8/plots", "wsdino")
+    os.makedirs(output_dir, exist_ok=True)
+    plot_accuracy_vs_image_count(model_names, sort_by="image_count", max_image_count=200, output_dir=output_dir)
+    plot_umap_comparison(model_names, output_dir=output_dir)
+    plot_tsne_comparison(model_names, output_dir=output_dir)

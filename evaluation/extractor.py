@@ -52,10 +52,6 @@ def extract_moa_features(
     output_dir = os.path.join(data_root, "bbbc021_features", model_name)
     os.makedirs(output_dir, exist_ok=True)
     
-    # Create DMSO subfolder
-    dmso_dir = os.path.join(output_dir, "DMSO")
-    os.makedirs(dmso_dir, exist_ok=True)
-    
     # Set device
     feature_extractor = feature_extractor.to(device)
     feature_extractor.eval()
@@ -130,6 +126,9 @@ def extract_moa_features(
 
     # TVN logic
     if tvn:
+        tvn_output_dir = os.path.join(data_root, "bbbc021_features", model_name, "tvn")
+        os.makedirs(tvn_output_dir, exist_ok=True)
+    
         print("\nFitting TVN from DMSO images...")
         if not tvn_features:
             raise RuntimeError("No DMSO features found to fit TVN.")
@@ -143,8 +142,8 @@ def extract_moa_features(
             avg_feature = torch.mean(transformed, dim=0)
             result = (key, avg_feature)
             compound_name, concentration, _ = key
-            filename = f"{compound_name}_{concentration}.pkl".replace(" ", "_").replace("/", "_")
-            filepath = os.path.join(output_dir, filename)
+            filename = f"{compound_name}_{concentration}_tvn.pkl".replace(" ", "_").replace("/", "_")
+            filepath = os.path.join(tvn_output_dir, filename)
             with open(filepath, 'wb') as f:
                 pickle.dump(result, f)
             print(f"Saved averaged TVN features to {filepath}")
@@ -170,5 +169,5 @@ if __name__ == "__main__":
         batch_size=256,
         data_root="/scratch/cv-course2025/group8",
         compounds=constants.COMPOUNDS,
-        tvn=False
+        tvn=False #True
     )

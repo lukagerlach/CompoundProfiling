@@ -1,9 +1,11 @@
+from collections import defaultdict
+import random
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset
-from torchvision import transforms
-import numpy as np
+# from torchvision import transforms
 from models.load_model import load_pretrained_model, ModelName
 
 class BBBC021WeakLabelDataset(Dataset):
@@ -37,27 +39,57 @@ class BBBC021WeakLabelDataset(Dataset):
             )))
         }
 
+        self.label_to_indices = defaultdict(list)
+        for i in self.valid_indices:
+            compound = bbbc021[i][1].compound.compound
+            self.label_to_indices[compound].append(i)
+        
+        # assert all(len(idxs) > 1 for idxs in self.label_to_indices.values()), "All compounds must have at least two samples."
+
     def __len__(self):
         #return len(self.valid_samples)
         return len(self.valid_indices)
 
     def __getitem__(self, idx):
         actual_idx = self.valid_indices[idx]
-        img, meta = self.bbbc021[actual_idx]
+        img1, meta1 = self.bbbc021[actual_idx]
+        compound = meta1.compound.compound
+        weak_label = self.compound_to_idx[compound]
+        moa = meta1.compound.moa
 
-        if isinstance(img, np.ndarray):
-            img = torch.from_numpy(img).float()
+        # Sample a different image from same compound
+        candidates = self.label_to_indices[compound]
+        alt_idx = actual_idx
+        while alt_idx == actual_idx:
+            alt_idx = random.choice(candidates)
 
-        compound_id = meta.compound.compound
-        weak_label = self.compound_to_idx[compound_id]
-        moa = meta.compound.moa
+        img2, _ = self.bbbc021[alt_idx]
+
+        # Convert img1 to torch tensor and ensure 3 channels
+        if isinstance(img1, np.ndarray):
+            img1 = torch.from_numpy(img1).float()
+        if img1.ndim == 2:
+            img1 = img1.unsqueeze(0).repeat(3, 1, 1)
+        elif img1.shape[0] == 1:
+            img1 = img1.repeat(3, 1, 1)
+
+        # Convert img2 to torch tensor and ensure 3 channels
+        if isinstance(img2, np.ndarray):
+            img2 = torch.from_numpy(img2).float()
+        if img2.ndim == 2:
+            img2 = img2.unsqueeze(0).repeat(3, 1, 1)
+        elif img2.shape[0] == 1:
+            img2 = img2.repeat(3, 1, 1)
 
         if self.transform:
-            crops = self.transform(img)  # List of tensors
+            crops1 = self.transform(img1)  # teacher views
+            crops2 = self.transform(img2)  # student views
         else:
-            crops = [img]
+            crops1, crops2 = [img1], [img2]
 
-        return crops, weak_label, moa
+        return crops1, crops2, weak_label, moa
+
+
 
 class DINOProjectionHead(nn.Module):
     """
@@ -91,6 +123,81 @@ class DINOProjectionHead(nn.Module):
         x = F.normalize(x, dim=-1)  # L2 normalization
         return self.last_layer(x)
 
+class SimpleDINOLoss(nn.Module):
+    """
+    DINO Loss: Self-distillation with no labels.
+    
+    This version uses a constant teacher temperature (default: 0.04) and no temperature warmup.
+    """
+    def __init__(self, out_dim, ncrops, student_temp=0.1, teacher_temp=0.04, center_momentum=0.9):
+        super().__init__()
+        self.student_temp = student_temp
+        self.teacher_temp = teacher_temp
+        self.center_momentum = center_momentum
+        self.ncrops = ncrops
+
+        # Running center for teacher output
+        self.register_buffer("center", torch.zeros(1, out_dim))
+
+    def forward(self, student_output, teacher_output):
+        """
+        Computes the DINO cross-entropy loss between teacher and student outputs.
+
+        Args:
+            student_output (Tensor): Shape (batch_size * ncrops, out_dim)
+            teacher_output (Tensor): Shape (batch_size * 2, out_dim) — from 2 global views
+
+        Returns:
+            Scalar loss value (Tensor)
+        """
+        student_out = student_output / self.student_temp
+        student_chunks = student_out.chunk(self.ncrops)
+
+        # Centering and sharpening teacher outputs
+        #teacher_out = F.softmax((teacher_output - self.center) / self.teacher_temp, dim=-1)
+        teacher_out = F.softmax((teacher_output - self.center.to(teacher_output.device)) / self.teacher_temp, dim=-1)
+        teacher_chunks = teacher_out.detach().chunk(2)  # only global views
+
+        total_loss = 0
+        n_loss_terms = 0
+
+        for iq, q in enumerate(teacher_chunks):
+            for v in range(len(student_chunks)):
+                if v == iq:
+                    continue  # skip matching student and teacher on same view
+                loss = torch.sum(-q * F.log_softmax(student_chunks[v], dim=-1), dim=-1)
+                total_loss += loss.mean()
+                n_loss_terms += 1
+
+        total_loss /= n_loss_terms
+        self.update_center(teacher_output)
+        return total_loss
+
+    @torch.no_grad()
+    def update_center(self, teacher_output):
+        """
+        Update the center used to normalize teacher outputs using EMA.
+        """
+        batch_center = torch.mean(teacher_output, dim=0, keepdim=True)
+        batch_center = batch_center.to(self.center.device)
+        self.center = self.center * self.center_momentum + batch_center * (1 - self.center_momentum)
+
+
+class MultiCropTransform:
+    """
+    Generate 2 global crops and N local crops from the same image.
+    """
+    def __init__(self, global_transform, local_transform, num_local_crops):
+        self.global_transform = global_transform
+        self.local_transform = local_transform
+        self.num_local_crops = num_local_crops
+
+    def __call__(self, x):
+        crops = [self.global_transform(x) for _ in range(2)]
+        crops += [self.local_transform(x) for _ in range(self.num_local_crops)]
+        return crops
+
+
 def get_resnet50(num_classes=None, use_projection_head=True, proj_dim=256, model_type="base_resnet"):
     """
     Loads a ResNet-50 backbone with the final layer replaced for classification.
@@ -116,23 +223,7 @@ def get_resnet50(num_classes=None, use_projection_head=True, proj_dim=256, model
 
     return backbone
 
-def dino_loss(student_out, teacher_out, temp=0.07):
-    """
-    Computes the DINO distillation loss between student and teacher outputs.
-
-    Args:
-        student_out: Logits from the student network
-        teacher_out: Logits from the teacher network (detached)
-        temp: Temperature scaling parameter
-
-    Returns:
-        KL divergence loss between student and teacher probability distributions
-    """
-    s = F.log_softmax(student_out / temp, dim=1)
-    t = F.softmax(teacher_out / temp, dim=1).detach()
-    return F.kl_div(s, t, reduction='batchmean')
-
-def update_teacher(student, teacher, m=0.996):
+def update_teacher(student, teacher, m=0.99):
     """
     Updates teacher weights using exponential moving average of student weights.
 
@@ -146,17 +237,3 @@ def update_teacher(student, teacher, m=0.996):
     """
     for ps, pt in zip(student.parameters(), teacher.parameters()):
         pt.data = pt.data * m + ps.data * (1. - m)
-
-class MultiCropTransform:
-    """
-    Generate 2 global crops and N local crops from the same image.
-    """
-    def __init__(self, global_transform, local_transform, num_local_crops):
-        self.global_transform = global_transform
-        self.local_transform = local_transform
-        self.num_local_crops = num_local_crops
-
-    def __call__(self, x):
-        crops = [self.global_transform(x) for _ in range(2)]
-        crops += [self.local_transform(x) for _ in range(self.num_local_crops)]
-        return crops

@@ -8,7 +8,7 @@ class TypicalVariationNormalizer:
 
     TVN is commonly used in bioimage analysis to reduce batch effects and normalize 
     features relative to a control group (typically DMSO-treated images). It uses PCA 
-    to capture dominant variation modes and whitens the features.
+    to capture dominant variation modes.
 
     Attributes:
         mean_ (torch.Tensor): Mean vector of the DMSO features computed during PCA fitting.
@@ -19,7 +19,7 @@ class TypicalVariationNormalizer:
     def __init__(self, eps=1e-8):
         self.mean_ = None
         self.components_ = None
-        self.whiten = True
+        self.whiten = False
         self.eps = eps
 
     def fit(self, dmso_features: torch.Tensor):
@@ -36,8 +36,7 @@ class TypicalVariationNormalizer:
 
     def transform(self, features: torch.Tensor) -> torch.Tensor:
         """
-        Applies TVN to a set of input features using the fitted PCA model, returning the 
-        whitened and decorrelated features.
+        Applies TVN to a set of input features using the fitted PCA model, returning the decorrelated features.
         """
         x_centered = features - self.mean_.to(features.device)
         x_transformed = torch.matmul(x_centered, self.components_.T.to(features.device))

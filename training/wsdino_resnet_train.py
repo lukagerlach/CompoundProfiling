@@ -8,17 +8,17 @@ from models.wsdino_resnet import (
     BBBC021WeakLabelDataset,
     MultiCropTransform,
     get_resnet50,
-    dino_loss,
+    SimpleDINOLoss,
     update_teacher
 )
 
 def train_wsdino(
     root_path="/scratch/cv-course2025/group8",
     epochs=200,
-    batch_size=512,
-    lr=0.0003,
-    momentum = 0.996,
-    temperature=0.1,
+    batch_size=16,
+    lr = 4 * 10**(-6),
+    momentum = 0.99,
+    temperature=0.04,
     proj_dim=128,
     save_every=50
 ):
@@ -50,8 +50,9 @@ def train_wsdino(
 
     global_transform = T.Compose([
         T.RandomResizedCrop(224, scale=(0.4, 1.0)),
-        T.RandomHorizontalFlip(),
-        T.ColorJitter(0.4, 0.4, 0.4, 0.1),
+        T.RandomHorizontalFlip(p=0.5),
+        T.RandomVerticalFlip(p=0.5),
+        #T.ColorJitter(0.4, 0.4, 0.4, 0.1),
         #T.ToTensor(),
         #T.Resize((224, 224)),
         T.Normalize(mean=[0.485]*3, std=[0.229]*3)
@@ -59,8 +60,9 @@ def train_wsdino(
 
     local_transform = T.Compose([
         T.RandomResizedCrop(96, scale=(0.05, 0.4)),
-        T.RandomHorizontalFlip(),
-        T.ColorJitter(0.4, 0.4, 0.4, 0.1),
+        T.RandomHorizontalFlip(p=0.5),
+        T.RandomVerticalFlip(p=0.5),
+        #T.ColorJitter(0.4, 0.4, 0.4, 0.1),
         T.Normalize(mean=[0.485]*3, std=[0.229]*3)
     ])
 
@@ -110,8 +112,16 @@ def train_wsdino(
     optimizer = torch.optim.AdamW(
         student.parameters(),
         lr=lr,
-        weight_decay=0.05,
+        weight_decay=0.0,
         betas=(0.9, 0.999)
+    )
+
+    criterion = SimpleDINOLoss(
+        out_dim=proj_dim,
+        ncrops=8,               # 2 global + 6 local crops
+        student_temp=0.1,
+        teacher_temp=temperature,
+        center_momentum=momentum
     )
 
     # Create save directory
@@ -123,22 +133,27 @@ def train_wsdino(
     for epoch in range(epochs):
         student.train()
         total_loss = 0
-        for crops, _, _ in dataloader:
-            # crops: list of views per image, batch size N
-            crops = [crop.to(device, non_blocking=True) for crop in crops]
 
-            student_out = [student(view) for view in crops]
+        for crops1, crops2, _, _ in dataloader:
+            crops1 = [c.to(device) for c in crops1]  # teacher views
+            crops2 = [c.to(device) for c in crops2]  # student views
 
+            #student_outputs = torch.cat([student(crop) for crop in crops2], dim=0)
+            #with torch.no_grad():
+            #    teacher_outputs = torch.cat([teacher(crop) for crop in crops1], dim=0)
+
+            # Flatten all views into a single batch
+            all_student_views = torch.cat(crops2, dim=0)  # shape [num_crops * B, C, H, W]
+            all_teacher_views = torch.cat(crops1, dim=0)  # shape [2 * B, C, H, W]
+
+            # Forward passes
+            student_outputs = student(all_student_views)
             with torch.no_grad():
-                teacher_out = [teacher(crops[0]), teacher(crops[1])]
+                teacher_outputs = teacher(all_teacher_views)
+
 
             # Compute DINO loss
-            loss = 0
-            for t_out in teacher_out:
-                t_out = t_out.detach()
-                for s_out in student_out:
-                    loss += dino_loss(s_out, t_out, temp=0.07)
-            loss /= (len(teacher_out) * len(student_out))
+            loss = criterion(student_outputs, teacher_outputs)
 
             # Backward & optimize
             optimizer.zero_grad()
@@ -146,7 +161,7 @@ def train_wsdino(
             optimizer.step()
 
             # Update teacher
-            update_teacher(student, teacher, m=0.996)
+            update_teacher(student, teacher, m=momentum)
 
             total_loss += loss.item()
 
@@ -171,10 +186,11 @@ def train_wsdino(
 if __name__ == "__main__":
     train_wsdino(
         root_path="/scratch/cv-course2025/group8",
-        epochs=300,
-        batch_size=256,
-        lr=0.0003,
+        epochs=100,
+        batch_size=16,
+        lr=4 * 10**(-6),
         momentum = 0.99,
-        proj_dim=256,
+        temperature=0.04,
+        proj_dim=128,
         save_every=50
     )

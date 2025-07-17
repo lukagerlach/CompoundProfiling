@@ -11,7 +11,11 @@ from experiments.tvn import TypicalVariationNormalizer
 
 DistanceMeasure = Literal["l1", "l2", "cosine"]
 
-def evaluate_model(model_name: ModelName, distance_measure: DistanceMeasure = "cosine", nsc_eval = True, tvn: bool = False) -> Dict[str, float]:
+def evaluate_model(
+        model_name: ModelName, 
+        distance_measure: DistanceMeasure = "cosine", 
+        nsc_eval = True, 
+        tvn: bool = False) -> Dict[str, float]:
     """
     Evaluate MOA prediction using 1-nearest neighbor with specified distance measure on pre-extracted features.
     
@@ -26,7 +30,10 @@ def evaluate_model(model_name: ModelName, distance_measure: DistanceMeasure = "c
     """
     
     # Load pre-computed features
-    features_dir = f"/scratch/cv-course2025/group8/bbbc021_features/{model_name}"
+    if tvn:
+        features_dir = f"/scratch/cv-course2025/group8/bbbc021_features/{model_name}/tvn"
+    else:
+        features_dir = f"/scratch/cv-course2025/group8/bbbc021_features/{model_name}"
     
     if not os.path.exists(features_dir):
         raise FileNotFoundError(f"Features directory not found: {features_dir}")
@@ -49,9 +56,6 @@ def evaluate_model(model_name: ModelName, distance_measure: DistanceMeasure = "c
     
     if not stored_features_dict:
         raise ValueError("No valid feature files found")
-    
-    # if tvn:
-        # TODO: maybe add some logic to compare no TVN with TVN?
     
     # Track results
     total_correct = 0
@@ -160,8 +164,8 @@ def evaluate_model(model_name: ModelName, distance_measure: DistanceMeasure = "c
     return results
 
 if __name__ == "__main__":
-    model_name = "simclr"
-    # model_name = "wsdino"
+    #model_name = "simclr"
+    model_name = "wsdino"
     
     # Evaluate model
     results = evaluate_model(model_name, distance_measure="cosine", nsc_eval=True, tvn=False)
